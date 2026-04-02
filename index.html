@@ -192,6 +192,7 @@
     }
 
     .card:hover { border-color: rgba(232,201,126,0.3); transform: translateY(-2px); }
+    .card.card-locked { border-color: rgba(192,97,74,0.3); opacity: 0.8; }
 
     .card-img {
       width: 100%;
@@ -258,6 +259,7 @@
     .badge-available { background: rgba(106,158,114,0.15); color: var(--success); }
     .badge-taken { background: rgba(192,97,74,0.15); color: var(--danger); }
     .badge-price { background: rgba(232,201,126,0.1); color: var(--accent); }
+    .badge-locked { background: rgba(192,97,74,0.15); color: var(--danger); }
 
     .registrations {
       border-top: 1px solid var(--border);
@@ -441,6 +443,41 @@
     .error-msg { color: var(--danger); font-size: 0.8rem; margin-bottom: 0.75rem; display: none; }
     .error-msg.visible { display: block; }
 
+    /* ── EDIT MODAL ── */
+    .edit-modal { max-width: 480px; }
+
+    .edit-modal .edit-field { margin-bottom: 0.85rem; }
+
+    .edit-modal .edit-field label {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-weight: 500;
+      margin-bottom: 0.35rem;
+    }
+
+    .edit-modal .edit-field input,
+    .edit-modal .edit-field textarea {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      margin-bottom: 0;
+      transition: border-color 0.18s;
+    }
+
+    .edit-modal .edit-field input:focus,
+    .edit-modal .edit-field textarea:focus { border-color: var(--accent); }
+
+    .edit-modal .edit-field textarea { resize: vertical; min-height: 70px; }
+
     /* ── EMPTY STATE ── */
     .empty {
       text-align: center;
@@ -492,6 +529,7 @@
       display: none;
       gap: 0.5rem;
       padding: 0 1.25rem 1.25rem;
+      flex-wrap: wrap;
     }
 
     .admin-mode .card-admin-actions { display: flex; }
@@ -513,6 +551,7 @@
     .section-header .filter-tabs {
       display: flex;
       gap: 0.5rem;
+      flex-wrap: wrap;
     }
 
     .tab {
@@ -534,6 +573,11 @@
     }
 
     .tab.active { color: var(--accent); }
+
+    /* Gesperrt-Reiter */
+    #tabLocked { display: none; }
+    #tabLocked.tab-visible { display: inline-flex; }
+    #tabLocked.active { color: var(--danger) !important; border-color: rgba(192,97,74,0.4) !important; }
   </style>
 </head>
 <body>
@@ -614,9 +658,10 @@
   <div class="section-header">
     <h2 id="sectionTitle">Alle Artikel</h2>
     <div class="filter-tabs">
-      <button class="tab active" onclick="setFilter('all', this)">Alle</button>
+      <button class="tab active" id="tabAll" onclick="setFilter('all', this)">Alle</button>
       <button class="tab" onclick="setFilter('available', this)">Verfügbar</button>
       <button class="tab" onclick="setFilter('taken', this)">Belegt</button>
+      <button class="tab" id="tabLocked" onclick="setFilter('locked', this)">🔒 Gesperrt</button>
     </div>
   </div>
 
@@ -666,10 +711,37 @@
   </div>
 </div>
 
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal edit-modal">
+    <h3>✏ Artikel bearbeiten</h3>
+    <div class="edit-field">
+      <label>Titel *</label>
+      <input type="text" id="editTitle" placeholder="Titel…" />
+    </div>
+    <div class="edit-field">
+      <label>Beschreibung</label>
+      <textarea id="editDesc" placeholder="Beschreibung…"></textarea>
+    </div>
+    <div class="edit-field">
+      <label>Preis / Info</label>
+      <input type="text" id="editPrice" placeholder="z.B. Kostenlos, 5 €…" />
+    </div>
+    <div class="edit-field">
+      <label id="editSlotsLabel">Plätze</label>
+      <input type="number" id="editSlots" min="1" max="99" />
+    </div>
+    <div class="modal-actions" style="margin-top:1.25rem;">
+      <button class="btn btn-ghost" onclick="closeModal('editModal')">Abbrechen</button>
+      <button class="btn btn-accent" onclick="saveEdit()">Speichern</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ── CONFIG ──────────────────────────────────────────────
 // PASSWORT HIER ÄNDERN:
-const ADMIN_PASSWORD = "MaxsShop1234567890MaximilianMichael13!";
+const ADMIN_PASSWORD = "***";
 
 // ── STATE ───────────────────────────────────────────────
 let items = JSON.parse(localStorage.getItem('shopItems') || '[]');
@@ -677,6 +749,7 @@ let isAdmin = false;
 let currentFilter = 'all';
 let pendingDeleteId = null;
 let pendingUnreg = null; // {itemId, name}
+let editingId = null;
 
 // ── STORAGE ─────────────────────────────────────────────
 function save() {
@@ -690,22 +763,31 @@ function render() {
   const grid = document.getElementById('itemGrid');
   let filtered = items;
 
-  if (currentFilter === 'available') filtered = items.filter(i => i.registrations.length < i.slots);
-  if (currentFilter === 'taken') filtered = items.filter(i => i.registrations.length >= i.slots);
+  // Gesperrte Artikel im normalen Modus ausblenden
+  if (!isAdmin) filtered = items.filter(i => !i.locked);
+
+  if (currentFilter === 'available') filtered = filtered.filter(i => i.registrations.length < i.slots);
+  if (currentFilter === 'taken')     filtered = filtered.filter(i => i.registrations.length >= i.slots);
+  if (currentFilter === 'locked')    filtered = items.filter(i => i.locked); // nur im Admin sichtbar
 
   if (filtered.length === 0) {
+    const icon = currentFilter === 'locked' ? '🔒' : '📭';
+    const title = currentFilter === 'locked'
+      ? 'Keine gesperrten Artikel'
+      : items.filter(i => !i.locked).length === 0 ? 'Noch keine Artikel' : 'Keine Artikel gefunden';
+    const sub = currentFilter === 'locked'
+      ? 'Sperr einen Artikel über den Admin-Bereich.'
+      : isAdmin ? 'Füge deinen ersten Artikel über das Admin-Panel hinzu.' : 'Versuche einen anderen Filter.';
     grid.innerHTML = `
       <div class="empty" style="grid-column:1/-1">
-        <div class="empty-icon">📭</div>
-        <h3>${items.length === 0 ? 'Noch keine Artikel' : 'Keine Artikel gefunden'}</h3>
-        <p>${items.length === 0 && isAdmin ? 'Füge deinen ersten Artikel über das Admin-Panel hinzu.' : 'Versuche einen anderen Filter.'}</p>
+        <div class="empty-icon">${icon}</div>
+        <h3>${title}</h3>
+        <p>${sub}</p>
       </div>`;
     return;
   }
 
   grid.innerHTML = filtered.map(item => cardHTML(item)).join('');
-
-  // animate stagger
   grid.querySelectorAll('.card').forEach((c, i) => {
     c.style.animationDelay = `${i * 0.06}s`;
   });
@@ -733,36 +815,45 @@ function cardHTML(item) {
     ? `<div class="register-form">
          <input type="text" placeholder="Dein Name…" id="regInput_${item.id}" maxlength="60" onkeydown="if(event.key==='Enter')register('${item.id}')" />
          <button class="btn btn-accent btn-sm" onclick="register('${item.id}')">Eintragen</button>
-       </div>` : `<p style="font-size:0.8rem;color:var(--danger);margin-top:0.75rem;text-align:center;">✕ Alle Plätze belegt</p>`;
+       </div>`
+    : `<p style="font-size:0.8rem;color:var(--danger);margin-top:0.75rem;text-align:center;">✕ Alle Plätze belegt</p>`;
+
+  const statusBadge = item.locked
+    ? `<span class="badge badge-locked">🔒 Gesperrt</span>`
+    : `<span class="badge ${taken ? 'badge-taken' : 'badge-available'}">${taken ? '✕ Belegt' : '✓ Verfügbar'}</span>`;
+
+  const lockBtn = item.locked
+    ? `<button class="btn btn-sm btn-ghost" onclick="toggleLock('${item.id}')">🔓 Entsperren</button>`
+    : `<button class="btn btn-sm btn-ghost" onclick="toggleLock('${item.id}')">🔒 Sperren</button>`;
 
   return `
-    <div class="card ${isAdmin ? 'admin-mode' : ''}" id="card_${item.id}">
+    <div class="card ${isAdmin ? 'admin-mode' : ''} ${item.locked ? 'card-locked' : ''}" id="card_${item.id}">
       ${imgHTML}
       <div class="card-body">
         ${item.category ? `<div class="card-category">${escHtml(item.category)}</div>` : ''}
         <div class="card-title">${escHtml(item.title)}</div>
         ${item.desc ? `<div class="card-desc">${escHtml(item.desc)}</div>` : ''}
         <div class="card-meta">
-          <span class="badge ${taken ? 'badge-taken' : 'badge-available'}">
-            ${taken ? '✕ Belegt' : '✓ Verfügbar'}
-          </span>
+          ${statusBadge}
           ${item.price ? `<span class="badge badge-price">💰 ${escHtml(item.price)}</span>` : ''}
           ${item.slots > 1 ? `<span class="badge" style="background:rgba(255,255,255,0.05);color:var(--muted)">👥 ${item.slots} Plätze</span>` : ''}
         </div>
         ${regsHTML}
-        ${registerHTML}
+        ${!item.locked ? registerHTML : ''}
       </div>
       <div class="card-admin-actions">
-        <button class="btn btn-sm btn-ghost" onclick="promptEdit('${item.id}')">✏ Bearbeiten</button>
+        <button class="btn btn-sm btn-ghost" onclick="openEdit('${item.id}')">✏ Bearbeiten</button>
+        ${lockBtn}
         <button class="btn btn-sm btn-danger" onclick="askDelete('${item.id}')">🗑 Löschen</button>
       </div>
     </div>`;
 }
 
 function updateStats() {
-  document.getElementById('statTotal').textContent = items.length;
-  document.getElementById('statAvail').textContent = items.filter(i => i.registrations.length < i.slots).length;
-  document.getElementById('statRegs').textContent = items.reduce((s, i) => s + i.registrations.length, 0);
+  const visible = items.filter(i => !i.locked);
+  document.getElementById('statTotal').textContent = visible.length;
+  document.getElementById('statAvail').textContent = visible.filter(i => i.registrations.length < i.slots).length;
+  document.getElementById('statRegs').textContent = visible.reduce((s, i) => s + i.registrations.length, 0);
 }
 
 // ── FILTER ──────────────────────────────────────────────
@@ -788,6 +879,7 @@ function addItem() {
     price: document.getElementById('newPrice').value.trim(),
     slots: Math.max(1, parseInt(document.getElementById('newSlots').value) || 1),
     registrations: [],
+    locked: false,
     created: Date.now()
   };
 
@@ -859,28 +951,52 @@ function confirmUnreg() {
   pendingUnreg = null;
 }
 
-// ── EDIT (inline prompt fallback) ───────────────────────
-function promptEdit(id) {
+// ── LOCK / UNLOCK ────────────────────────────────────────
+function toggleLock(id) {
   const item = items.find(i => i.id === id);
   if (!item) return;
-  const newTitle = prompt('Neuer Titel:', item.title);
-  if (newTitle === null) return;
-  if (!newTitle.trim()) { toast('Titel darf nicht leer sein.', 'error'); return; }
-  const newDesc = prompt('Neue Beschreibung:', item.desc);
-  if (newDesc === null) return;
-  const newPrice = prompt('Neuer Preis/Info:', item.price);
-  if (newPrice === null) return;
-  const newSlots = prompt(`Verfügbare Plätze (aktuell belegt: ${item.registrations.length}):`, item.slots);
-  if (newSlots === null) return;
-  const parsedSlots = parseInt(newSlots);
-  if (isNaN(parsedSlots) || parsedSlots < 1) { toast('Ungültige Anzahl an Plätzen.', 'error'); return; }
-  if (parsedSlots < item.registrations.length) { toast(`Mindestens ${item.registrations.length} Plätze nötig (bereits belegt).`, 'error'); return; }
-  item.title = newTitle.trim();
-  item.desc = newDesc.trim();
-  item.price = newPrice.trim();
-  item.slots = parsedSlots;
+  item.locked = !item.locked;
   save();
+  toast(item.locked ? `"${item.title}" gesperrt.` : `"${item.title}" entsperrt.`, 'success');
+}
+
+// ── EDIT (inline modal) ──────────────────────────────────
+function openEdit(id) {
+  const item = items.find(i => i.id === id);
+  if (!item) return;
+  editingId = id;
+  document.getElementById('editTitle').value = item.title;
+  document.getElementById('editDesc').value = item.desc || '';
+  document.getElementById('editPrice').value = item.price || '';
+  document.getElementById('editSlots').value = item.slots;
+  document.getElementById('editSlotsLabel').textContent = `Plätze (aktuell belegt: ${item.registrations.length})`;
+  openModal('editModal');
+  setTimeout(() => document.getElementById('editTitle').focus(), 200);
+}
+
+function saveEdit() {
+  if (!editingId) return;
+  const item = items.find(i => i.id === editingId);
+  if (!item) return;
+
+  const newTitle = document.getElementById('editTitle').value.trim();
+  if (!newTitle) { toast('Titel darf nicht leer sein.', 'error'); return; }
+
+  const parsedSlots = parseInt(document.getElementById('editSlots').value);
+  if (isNaN(parsedSlots) || parsedSlots < 1) { toast('Ungültige Anzahl an Plätzen.', 'error'); return; }
+  if (parsedSlots < item.registrations.length) {
+    toast(`Mindestens ${item.registrations.length} Plätze nötig (bereits belegt).`, 'error'); return;
+  }
+
+  item.title = newTitle;
+  item.desc  = document.getElementById('editDesc').value.trim();
+  item.price = document.getElementById('editPrice').value.trim();
+  item.slots = parsedSlots;
+
+  save();
+  closeModal('editModal');
   toast('Artikel aktualisiert ✓', 'success');
+  editingId = null;
 }
 
 // ── ADMIN LOGIN ──────────────────────────────────────────
@@ -889,6 +1005,12 @@ function openAdminLogin() {
     isAdmin = false;
     document.getElementById('adminPanel').classList.remove('visible');
     document.getElementById('adminToggleBtn').textContent = '⚙ Admin';
+    document.getElementById('tabLocked').classList.remove('tab-visible');
+    if (currentFilter === 'locked') {
+      currentFilter = 'all';
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('tabAll').classList.add('active');
+    }
     render();
     toast('Admin-Modus beendet.', 'success');
     return;
@@ -906,6 +1028,7 @@ function checkPassword() {
     document.getElementById('loginError').classList.remove('visible');
     document.getElementById('adminPanel').classList.add('visible');
     document.getElementById('adminToggleBtn').textContent = '✕ Admin beenden';
+    document.getElementById('tabLocked').classList.add('tab-visible');
     render();
     toast('Admin-Modus aktiv ✓', 'success');
   } else {
@@ -954,6 +1077,7 @@ if (items.length === 0) {
       price: 'Kostenlos',
       slots: 1,
       registrations: [],
+      locked: false,
       created: Date.now()
     },
     {
@@ -966,6 +1090,7 @@ if (items.length === 0) {
       price: '50 €',
       slots: 1,
       registrations: ['Max Mustermann'],
+      locked: false,
       created: Date.now()
     },
     {
@@ -978,6 +1103,7 @@ if (items.length === 0) {
       price: 'Kaffee & Kuchen',
       slots: 3,
       registrations: ['Anna'],
+      locked: false,
       created: Date.now()
     }
   ];
