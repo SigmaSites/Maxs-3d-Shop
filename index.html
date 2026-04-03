@@ -766,7 +766,7 @@ function setLoading(on) {
 
 // ── FIREBASE STORAGE ────────────────────────────────────
 async function save() {
-  if (!FIREBASE_URL || FIREBASE_URL === 'https://dshop-38e12-default-rtdb.europe-west1.firebasedatabase.app/') {
+  if (!FIREBASE_URL || FIREBASE_URL === 'Firebase-URL) {
     localStorage.setItem('shopItems', JSON.stringify(items));
     render(); updateStats(); return;
   }
@@ -786,7 +786,7 @@ async function save() {
 }
 
 async function loadFromFirebase() {
-  if (!FIREBASE_URL || FIREBASE_URL === 'https://dshop-38e12-default-rtdb.europe-west1.firebasedatabase.app/') {
+  if (!FIREBASE_URL || FIREBASE_URL === 'FIREBASE_URL) {
     items = JSON.parse(localStorage.getItem('shopItems') || '[]');
     render(); updateStats();
     return;
