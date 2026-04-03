@@ -741,22 +741,74 @@
 <script>
 // ── CONFIG ──────────────────────────────────────────────
 // PASSWORT HIER ÄNDERN:
-const ADMIN_PASSWORD = "MaxsShop1234567890MaximilianMichael13!";
+const ADMIN_PASSWORD = "***";
+
+// FIREBASE URL HIER EINTRAGEN:
+// Anleitung: https://console.firebase.google.com
+// 1. Neues Projekt erstellen
+// 2. "Realtime Database" erstellen (im Testmodus starten)
+// 3. Die URL unten eintragen (endet auf .firebaseio.com)
+const FIREBASE_URL = "DEINE_FIREBASE_URL_HIER"; // z.B. https://mein-shop-abc12-default-rtdb.firebaseio.com
 
 // ── STATE ───────────────────────────────────────────────
-let items = JSON.parse(localStorage.getItem('shopItems') || '[]');
+let items = [];
 let isAdmin = false;
 let currentFilter = 'all';
 let pendingDeleteId = null;
 let pendingUnreg = null; // {itemId, name}
 let editingId = null;
 
-// ── STORAGE ─────────────────────────────────────────────
-function save() {
-  localStorage.setItem('shopItems', JSON.stringify(items));
-  render();
-  updateStats();
+// ── LOADING UI ──────────────────────────────────────────
+function setLoading(on) {
+  document.getElementById('itemGrid').style.opacity = on ? '0.4' : '1';
+  document.getElementById('itemGrid').style.pointerEvents = on ? 'none' : '';
 }
+
+// ── FIREBASE STORAGE ────────────────────────────────────
+async function save() {
+  if (!FIREBASE_URL || FIREBASE_URL === 'https://dshop-38e12-default-rtdb.europe-west1.firebasedatabase.app/') {
+    localStorage.setItem('shopItems', JSON.stringify(items));
+    render(); updateStats(); return;
+  }
+  try {
+    setLoading(true);
+    await fetch(`${FIREBASE_URL}/items.json`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(items)
+    });
+  } catch(e) {
+    toast('Speichern fehlgeschlagen – prüfe die Firebase-URL.', 'error');
+  } finally {
+    setLoading(false);
+    render(); updateStats();
+  }
+}
+
+async function loadFromFirebase() {
+  if (!FIREBASE_URL || FIREBASE_URL === 'https://dshop-38e12-default-rtdb.europe-west1.firebasedatabase.app/') {
+    items = JSON.parse(localStorage.getItem('shopItems') || '[]');
+    render(); updateStats();
+    return;
+  }
+  try {
+    setLoading(true);
+    document.getElementById('itemGrid').innerHTML =
+      `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">⟳</div><p style="margin-top:1rem;color:var(--muted)">Artikel werden geladen…</p></div>`;
+    const res = await fetch(`${https://dshop-38e12-default-rtdb.europe-west1.firebasedatabase.app/}/items.json`);
+    const data = await res.json();
+    items = Array.isArray(data) ? data : (data ? Object.values(data) : []);
+  } catch(e) {
+    toast('Laden fehlgeschlagen – prüfe die Firebase-URL.', 'error');
+    items = [];
+  } finally {
+    setLoading(false);
+    render(); updateStats();
+  }
+}
+
+// Alle 30 Sekunden automatisch neu laden
+setInterval(() => { if (!isAdmin) loadFromFirebase(); }, 30000);
 
 // ── RENDER ──────────────────────────────────────────────
 function render() {
@@ -1064,10 +1116,7 @@ function escHtml(str) {
 }
 
 // ── INIT ──────────────────────────────────────────────────
-
-
-render();
-updateStats();
+loadFromFirebase();
 
 // Keyboard ESC
 document.addEventListener('keydown', e => {
