@@ -1064,51 +1064,7 @@ function escHtml(str) {
 }
 
 // ── INIT ──────────────────────────────────────────────────
-// Demo-Artikel hinzufügen, falls leer
-if (items.length === 0) {
-  items = [
-    {
-      id: 'demo1',
-      title: 'Rotes Vintage-Sofa',
-      desc: 'Leicht getragen, aber noch in gutem Zustand. Selbstabholung in München.',
-      category: 'Möbel',
-      image: '',
-      emoji: '🛋️',
-      price: 'Kostenlos',
-      slots: 1,
-      registrations: [],
-      locked: false,
-      created: Date.now()
-    },
-    {
-      id: 'demo2',
-      title: 'Fahrrad – Stadtrad 28"',
-      desc: '7-Gang Shimano, neue Bremsen, frisch geölt. Top Zustand!',
-      category: 'Sport & Freizeit',
-      image: '',
-      emoji: '🚲',
-      price: '50 €',
-      slots: 1,
-      registrations: ['Max Mustermann'],
-      locked: false,
-      created: Date.now()
-    },
-    {
-      id: 'demo3',
-      title: 'Gartenarbeit Samstag',
-      desc: 'Hilfe beim Unkraut jäten und Hecke schneiden. 3-4 Stunden.',
-      category: 'Mithilfe gesucht',
-      image: '',
-      emoji: '🌿',
-      price: 'Kaffee & Kuchen',
-      slots: 3,
-      registrations: ['Anna'],
-      locked: false,
-      created: Date.now()
-    }
-  ];
-  save();
-}
+
 
 render();
 updateStats();
