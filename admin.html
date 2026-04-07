@@ -17,94 +17,71 @@
       content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 1000; opacity: 0.6;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
     }
-    header {
-      border-bottom: 1px solid var(--border); padding: 0 2rem;
-      display: flex; align-items: center; justify-content: space-between;
-      height: 70px; position: sticky; top: 0;
-      background: rgba(15,14,12,0.92); backdrop-filter: blur(12px); z-index: 100;
-    }
+    header { border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 70px; position: sticky; top: 0; background: rgba(15,14,12,0.92); backdrop-filter: blur(12px); z-index: 100; }
     .logo { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 900; letter-spacing: -0.02em; color: var(--accent); }
     .logo span { color: var(--text); }
     .header-actions { display: flex; gap: 0.75rem; align-items: center; }
-    .btn {
-      display: inline-flex; align-items: center; gap: 0.4rem;
-      padding: 0.5rem 1.1rem; border-radius: 8px; border: none; cursor: pointer;
-      font-family: 'DM Sans', sans-serif; font-size: 0.875rem; font-weight: 500; transition: all 0.18s ease;
-    }
+    .btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1.1rem; border-radius: 8px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.875rem; font-weight: 500; transition: all 0.18s ease; }
     .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
     .btn-ghost:hover { color: var(--text); border-color: var(--muted); }
     .btn-accent { background: var(--accent); color: #0f0e0c; font-weight: 600; }
-    .btn-accent:hover { background: #f0d590; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(232,201,126,0.25); }
+    .btn-accent:hover { background: #f0d590; transform: translateY(-1px); }
     .btn-danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); }
     .btn-danger:hover { background: var(--danger); color: white; }
     .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.8rem; }
 
-    /* LOGIN SCREEN */
-    #loginScreen {
-      display: flex; align-items: center; justify-content: center;
-      min-height: calc(100vh - 70px); padding: 2rem;
-    }
-    .login-box {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 2.5rem; width: 100%; max-width: 380px;
-      animation: fadeUp 0.3s ease;
-    }
+    /* LOGIN */
+    #loginScreen { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 70px); padding: 2rem; }
+    .login-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2.5rem; width: 100%; max-width: 380px; animation: fadeUp 0.3s ease; }
     .login-box h2 { font-family: 'Playfair Display', serif; font-size: 1.75rem; margin-bottom: 0.5rem; color: var(--accent); }
     .login-box p { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
-    .login-box input {
-      width: 100%; background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 8px; padding: 0.7rem 0.9rem; color: var(--text);
-      font-family: 'DM Sans', sans-serif; font-size: 0.95rem; outline: none;
-      margin-bottom: 0.75rem; transition: border-color 0.18s;
-    }
+    .login-box input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 0.7rem 0.9rem; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.95rem; outline: none; margin-bottom: 0.75rem; transition: border-color 0.18s; }
     .login-box input:focus { border-color: var(--accent); }
     .error-msg { color: var(--danger); font-size: 0.8rem; margin-bottom: 0.75rem; display: none; }
     .error-msg.visible { display: block; }
 
-    /* ADMIN CONTENT */
     #adminContent { display: none; }
     #adminContent.visible { display: block; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 
     main { max-width: 1200px; margin: 0 auto; padding: 2rem 2rem 3rem; }
+    .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; margin-bottom: 2rem; }
+    .panel h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 1.25rem; color: var(--accent); }
 
-    .admin-panel {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 2rem; margin-bottom: 2rem;
-    }
-    .admin-panel h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--accent); }
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
     @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
     .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
     .form-group.full { grid-column: 1 / -1; }
     .form-group label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 500; }
-    .form-group input, .form-group textarea {
-      background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
-      padding: 0.65rem 0.85rem; color: var(--text); font-family: 'DM Sans', sans-serif;
-      font-size: 0.9rem; outline: none; transition: border-color 0.18s;
-    }
+    .form-group input, .form-group textarea { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 0.65rem 0.85rem; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.18s; }
     .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); }
     .form-group textarea { resize: vertical; min-height: 80px; }
     .form-actions { grid-column: 1 / -1; display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 0.5rem; }
 
+    /* FILAMENT */
+    .filament-list { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
+    .filament-item { display: flex; align-items: center; justify-content: space-between; background: var(--surface2); border-radius: 8px; padding: 0.6rem 0.9rem; }
+    .fil-info { display: flex; align-items: center; gap: 0.75rem; }
+    .fil-dot { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); flex-shrink: 0; }
+    .fil-name { font-size: 0.9rem; }
+    .fil-mat { font-size: 0.75rem; color: var(--muted); margin-left: 0.2rem; }
+    .fil-add-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+    .fil-add-row input[type="color"] { width: 48px; height: 38px; padding: 0.2rem; cursor: pointer; border-radius: 6px; background: var(--surface2); border: 1px solid var(--border); flex: none; }
+    .fil-add-row input[type="text"] { flex: 1; min-width: 100px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 0.55rem 0.75rem; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.875rem; outline: none; transition: border-color 0.18s; }
+    .fil-add-row input[type="text"]:focus { border-color: var(--accent); }
+    .fil-add-row input::placeholder { color: var(--muted); }
+    .fil-empty { font-size: 0.85rem; color: var(--muted); text-align: center; padding: 1rem; }
+
     .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.75rem; }
     .section-header h2 { font-family: 'Playfair Display', serif; font-size: 1.75rem; font-weight: 700; }
     .filter-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-    .tab {
-      padding: 0.35rem 0.85rem; border-radius: 8px; border: 1px solid var(--border);
-      background: transparent; color: var(--muted); cursor: pointer;
-      font-size: 0.8rem; font-family: 'DM Sans', sans-serif; transition: all 0.15s;
-    }
+    .tab { padding: 0.35rem 0.85rem; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-size: 0.8rem; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
     .tab.active, .tab:hover { background: var(--surface); color: var(--text); border-color: rgba(232,201,126,0.3); }
     .tab.active { color: var(--accent); }
     #tabLocked.active { color: var(--danger) !important; border-color: rgba(192,97,74,0.4) !important; }
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
-    .card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius); overflow: hidden;
-      transition: border-color 0.2s, transform 0.2s; animation: fadeUp 0.4s ease both;
-    }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 1.5rem; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: border-color 0.2s, transform 0.2s; animation: fadeUp 0.4s ease both; }
     .card:hover { border-color: rgba(232,201,126,0.3); transform: translateY(-2px); }
     .card.card-locked { border-color: rgba(192,97,74,0.3); opacity: 0.8; }
     .card-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; background: var(--surface2); display: block; }
@@ -119,24 +96,23 @@
     .badge-taken { background: rgba(192,97,74,0.15); color: var(--danger); }
     .badge-price { background: rgba(232,201,126,0.1); color: var(--accent); }
     .badge-locked { background: rgba(192,97,74,0.15); color: var(--danger); }
+
     .registrations { border-top: 1px solid var(--border); padding-top: 1rem; margin-top: 0.75rem; }
     .reg-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 0.5rem; }
-    .reg-list { display: flex; flex-direction: column; gap: 0.35rem; }
-    .reg-item { display: flex; align-items: center; justify-content: space-between; background: var(--surface2); border-radius: 6px; padding: 0.4rem 0.7rem; font-size: 0.85rem; }
-    .reg-item .reg-name { display: flex; align-items: center; gap: 0.5rem; }
+    .reg-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    /* Admin reg card */
+    .reg-card { background: var(--surface2); border-radius: 8px; padding: 0.75rem; }
+    .reg-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem; }
+    .reg-card-name { font-weight: 500; font-size: 0.9rem; display: flex; align-items: center; gap: 0.4rem; }
+    .reg-card-detail { font-size: 0.8rem; color: var(--muted); display: flex; align-items: flex-start; gap: 0.4rem; margin-top: 0.2rem; }
+    .reg-card-detail span { color: var(--text); }
+
     .card-admin-actions { display: flex; gap: 0.5rem; padding: 0 1.25rem 1.25rem; flex-wrap: wrap; }
 
-    /* MODAL */
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
-      z-index: 200; display: flex; align-items: center; justify-content: center;
-      padding: 1rem; opacity: 0; pointer-events: none; transition: opacity 0.2s;
-    }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 1rem; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
     .modal-overlay.visible { opacity: 1; pointer-events: all; }
-    .modal {
-      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 2rem; width: 100%; max-width: 420px; transform: translateY(20px); transition: transform 0.2s;
-    }
+    .modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; width: 100%; max-width: 420px; transform: translateY(20px); transition: transform 0.2s; }
     .modal-overlay.visible .modal { transform: translateY(0); }
     .modal h3 { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 0.5rem; }
     .modal p { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.25rem; line-height: 1.6; }
@@ -144,11 +120,7 @@
     .edit-modal { max-width: 480px; }
     .edit-field { margin-bottom: 0.85rem; }
     .edit-field label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 500; margin-bottom: 0.35rem; }
-    .edit-field input, .edit-field textarea {
-      width: 100%; background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 8px; padding: 0.65rem 0.85rem; color: var(--text);
-      font-family: 'DM Sans', sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.18s;
-    }
+    .edit-field input, .edit-field textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 0.65rem 0.85rem; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.18s; }
     .edit-field input:focus, .edit-field textarea:focus { border-color: var(--accent); }
     .edit-field textarea { resize: vertical; min-height: 70px; }
 
@@ -156,11 +128,7 @@
     .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; }
     .empty h3 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--text); margin-bottom: 0.5rem; }
     .toast-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 500; display: flex; flex-direction: column; gap: 0.5rem; }
-    .toast {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-      padding: 0.75rem 1.1rem; font-size: 0.875rem; display: flex; align-items: center; gap: 0.6rem;
-      animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards; box-shadow: 0 8px 30px rgba(0,0,0,0.4);
-    }
+    .toast { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem 1.1rem; font-size: 0.875rem; display: flex; align-items: center; gap: 0.6rem; animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
     @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
     @keyframes fadeOut { to { opacity: 0; transform: translateX(20px); } }
     .toast.success { border-color: rgba(106,158,114,0.4); }
@@ -177,12 +145,12 @@
   </div>
 </header>
 
-<!-- LOGIN SCREEN -->
+<!-- LOGIN -->
 <div id="loginScreen">
   <div class="login-box">
     <h2>🔐 Admin-Zugang</h2>
     <p>Gib das Passwort ein, um den Shop zu verwalten.</p>
-    <div class="error-msg" id="loginError">Falsches Passwort. Bitte erneut versuchen.</div>
+    <div class="error-msg" id="loginError">Falsches Passwort.</div>
     <input type="password" id="passwordInput" placeholder="Passwort…" onkeydown="if(event.key==='Enter')checkPassword()" />
     <button class="btn btn-accent" style="width:100%" onclick="checkPassword()">Einloggen</button>
   </div>
@@ -191,8 +159,23 @@
 <!-- ADMIN CONTENT -->
 <div id="adminContent">
   <main>
-    <!-- ADD PANEL -->
-    <div class="admin-panel">
+
+    <!-- FILAMENT PANEL -->
+    <div class="panel">
+      <h2>🎨 Filamente verwalten</h2>
+      <div class="filament-list" id="filamentList">
+        <div class="fil-empty">Noch keine Filamente eingetragen.</div>
+      </div>
+      <div class="fil-add-row">
+        <input type="color" id="filColor" value="#ffffff" title="Farbe" />
+        <input type="text" id="filColorName" placeholder="Farbe (z.B. Schwarz)" />
+        <input type="text" id="filMaterial" placeholder="Material (z.B. PLA)" />
+        <button class="btn btn-accent btn-sm" onclick="addFilament()">＋ Hinzufügen</button>
+      </div>
+    </div>
+
+    <!-- ADD ARTICLE -->
+    <div class="panel">
       <h2>✦ Artikel hinzufügen</h2>
       <div class="form-grid">
         <div class="form-group"><label>Titel *</label><input type="text" id="newTitle" placeholder="z.B. Vase" /></div>
@@ -240,7 +223,7 @@
 <!-- UNREGISTER MODAL -->
 <div class="modal-overlay" id="unregModal">
   <div class="modal">
-    <h3>Reservierung löschen?</h3>
+    <h3>Reservierung entfernen?</h3>
     <p id="unregModalText">Diese Reservierung wirklich entfernen?</p>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal('unregModal')">Abbrechen</button>
@@ -265,77 +248,124 @@
 </div>
 
 <script>
-// ── CONFIG ──────────────────────────────────────────────
-// PASSWORT HIER ÄNDERN:
 const ADMIN_PASSWORD = "MaxsShop1234567890MaximilianMichael13!";
-const FIREBASE_URL   = "https://dshop-23436-default-rtdb.europe-west1.firebasedatabase.app/";
+const FIREBASE_URL   = "https://dshop-23436-default-rtdb.europe-west1.firebasedatabase.app";
 
-// ── STATE ───────────────────────────────────────────────
-let items = [];
+let items = [], filaments = [];
 let currentFilter = 'all';
-let pendingDeleteId = null;
-let pendingUnreg = null;
-let editingId = null;
+let pendingDeleteId = null, pendingUnreg = null, editingId = null;
 
 // ── FIREBASE ────────────────────────────────────────────
-async function save() {
+async function saveItems() {
   if (!FIREBASE_URL || FIREBASE_URL === 'DEINE_FIREBASE_URL_HIER') {
-    localStorage.setItem('shopItems', JSON.stringify(items));
-    render(); return;
+    localStorage.setItem('shopItems', JSON.stringify(items)); render(); return;
   }
-  try {
-    await fetch(`${FIREBASE_URL}/items.json`, {
-      method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(items)
-    });
-  } catch(e) { toast('Speichern fehlgeschlagen.', 'error'); }
+  try { await fetch(`${FIREBASE_URL}/items.json`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(items) }); }
+  catch(e) { toast('Speichern fehlgeschlagen.', 'error'); }
   render();
 }
 
-async function loadFromFirebase() {
+async function saveFilaments() {
+  if (!FIREBASE_URL || FIREBASE_URL === 'DEINE_FIREBASE_URL_HIER') {
+    localStorage.setItem('shopFilaments', JSON.stringify(filaments)); renderFilaments(); return;
+  }
+  try { await fetch(`${FIREBASE_URL}/filaments.json`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(filaments) }); }
+  catch(e) { toast('Speichern fehlgeschlagen.', 'error'); }
+  renderFilaments();
+}
+
+async function loadAll() {
   if (!FIREBASE_URL || FIREBASE_URL === 'DEINE_FIREBASE_URL_HIER') {
     items = JSON.parse(localStorage.getItem('shopItems') || '[]');
-    render(); return;
+    filaments = JSON.parse(localStorage.getItem('shopFilaments') || '[]');
+    render(); renderFilaments(); return;
   }
   try {
-    document.getElementById('itemGrid').innerHTML =
-      `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">⟳</div><p style="margin-top:1rem;color:var(--muted)">Laden…</p></div>`;
-    const res = await fetch(`${FIREBASE_URL}/items.json`);
-    const data = await res.json();
-    if (data === null) items = [];
-    else if (Array.isArray(data)) items = data.filter(i => i !== null);
-    else if (typeof data === 'object') items = Object.values(data).filter(i => i !== null);
-    else items = [];
-  } catch(e) { toast('Laden fehlgeschlagen.', 'error'); items = []; }
-  render();
+    document.getElementById('itemGrid').innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">⟳</div><p style="margin-top:1rem;color:var(--muted)">Laden…</p></div>`;
+    const [ir, fr] = await Promise.all([fetch(`${FIREBASE_URL}/items.json`), fetch(`${FIREBASE_URL}/filaments.json`)]);
+    const id = await ir.json(), fd = await fr.json();
+    items     = id === null ? [] : Array.isArray(id) ? id.filter(i=>i) : Object.values(id).filter(i=>i);
+    filaments = fd === null ? [] : Array.isArray(fd) ? fd.filter(f=>f) : Object.values(fd).filter(f=>f);
+  } catch(e) { toast('Laden fehlgeschlagen.', 'error'); }
+  render(); renderFilaments();
 }
 
-// ── RENDER ──────────────────────────────────────────────
+// ── FILAMENTS ────────────────────────────────────────────
+function renderFilaments() {
+  const list = document.getElementById('filamentList');
+  if (!filaments.length) { list.innerHTML = '<div class="fil-empty">Noch keine Filamente.</div>'; return; }
+  list.innerHTML = filaments.map((f, i) => `
+    <div class="filament-item">
+      <div class="fil-info">
+        <div class="fil-dot" style="background:${escHtml(f.hex||'#888')}"></div>
+        <span class="fil-name">${escHtml(f.color)}</span>
+        <span class="fil-mat">– ${escHtml(f.material)}</span>
+      </div>
+      <button class="btn btn-sm btn-danger" onclick="removeFilament(${i})">✕</button>
+    </div>`).join('');
+}
+
+function addFilament() {
+  const color = document.getElementById('filColorName').value.trim();
+  const material = document.getElementById('filMaterial').value.trim();
+  const hex = document.getElementById('filColor').value;
+  if (!color || !material) { toast('Farbe und Material angeben.', 'error'); return; }
+  filaments.push({ color, material, hex });
+  saveFilaments();
+  document.getElementById('filColorName').value = '';
+  document.getElementById('filMaterial').value = '';
+  toast(`${color} ${material} hinzugefügt ✓`, 'success');
+}
+
+function removeFilament(idx) {
+  filaments.splice(idx, 1);
+  saveFilaments();
+  toast('Filament entfernt.', 'success');
+}
+
+// ── RENDER ITEMS ─────────────────────────────────────────
+function getRegs(item) { return (item.registrations || []).filter(r => r !== null); }
+function getRegName(r) { return typeof r === 'string' ? r : (r.name || ''); }
+function getRegFilament(r) { return typeof r === 'string' ? '' : (r.filament || ''); }
+function getRegDelivery(r) { return typeof r === 'string' ? '' : (r.delivery || ''); }
+
 function render() {
   const grid = document.getElementById('itemGrid');
   let filtered = items;
-  if (currentFilter === 'available') filtered = items.filter(i => !i.locked && (i.registrations||[]).length < i.slots);
-  if (currentFilter === 'taken')     filtered = items.filter(i => !i.locked && (i.registrations||[]).length >= i.slots);
+  if (currentFilter === 'available') filtered = items.filter(i => !i.locked && getRegs(i).length < i.slots);
+  if (currentFilter === 'taken')     filtered = items.filter(i => !i.locked && getRegs(i).length >= i.slots);
   if (currentFilter === 'locked')    filtered = items.filter(i => i.locked);
-
-  if (filtered.length === 0) {
+  if (!filtered.length) {
     const icon = currentFilter === 'locked' ? '🔒' : '📭';
-    const title = currentFilter === 'locked' ? 'Keine gesperrten Artikel' : 'Keine Artikel gefunden';
+    const title = currentFilter === 'locked' ? 'Keine gesperrten Artikel' : 'Keine Artikel';
     grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">${icon}</div><h3>${title}</h3></div>`;
     return;
   }
   grid.innerHTML = filtered.map(item => cardHTML(item)).join('');
-  grid.querySelectorAll('.card').forEach((c, i) => c.style.animationDelay = `${i * 0.06}s`);
+  grid.querySelectorAll('.card').forEach((c, i) => c.style.animationDelay = `${i*0.06}s`);
 }
 
 function cardHTML(item) {
-  if (!item.registrations) item.registrations = [];
-  const taken = item.registrations.length >= item.slots;
+  const regs = getRegs(item);
+  const taken = regs.length >= item.slots;
   const imgHTML = item.image
     ? `<img class="card-img" src="${escHtml(item.image)}" alt="${escHtml(item.title)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" /><div class="card-img-placeholder" style="display:none">${escHtml(item.emoji||'📦')}</div>`
     : `<div class="card-img-placeholder">${escHtml(item.emoji||'📦')}</div>`;
 
-  const regsHTML = item.registrations.length > 0
-    ? `<div class="registrations"><div class="reg-label">Reservierungen (${item.registrations.length}/${item.slots})</div><div class="reg-list">${item.registrations.map(r=>`<div class="reg-item"><span class="reg-name">👤 ${escHtml(r)}</span><button class="btn btn-sm btn-danger" onclick="askUnreg('${item.id}','${escHtml(r).replace(/'/g,"\\'")}')">✕</button></div>`).join('')}</div></div>` : '';
+  const regsHTML = regs.length > 0
+    ? `<div class="registrations">
+        <div class="reg-label">Reservierungen (${regs.length}/${item.slots})</div>
+        <div class="reg-list">${regs.map(r => `
+          <div class="reg-card">
+            <div class="reg-card-header">
+              <div class="reg-card-name">👤 ${escHtml(getRegName(r))}</div>
+              <button class="btn btn-sm btn-danger" onclick="askUnreg('${item.id}','${escHtml(getRegName(r)).replace(/'/g,"\\'")}')">✕</button>
+            </div>
+            ${getRegFilament(r) ? `<div class="reg-card-detail">🎨 <span>${escHtml(getRegFilament(r))}</span></div>` : ''}
+            ${getRegDelivery(r) ? `<div class="reg-card-detail">📦 <span>${escHtml(getRegDelivery(r))}</span></div>` : ''}
+          </div>`).join('')}
+        </div>
+      </div>` : '';
 
   const statusBadge = item.locked
     ? `<span class="badge badge-locked">🔒 Gesperrt</span>`
@@ -344,16 +374,16 @@ function cardHTML(item) {
     ? `<button class="btn btn-sm btn-ghost" onclick="toggleLock('${item.id}')">🔓 Entsperren</button>`
     : `<button class="btn btn-sm btn-ghost" onclick="toggleLock('${item.id}')">🔒 Sperren</button>`;
 
-  return `<div class="card ${item.locked ? 'card-locked' : ''}" id="card_${item.id}">
+  return `<div class="card ${item.locked?'card-locked':''}" id="card_${item.id}">
     ${imgHTML}
     <div class="card-body">
-      ${item.category ? `<div class="card-category">${escHtml(item.category)}</div>` : ''}
+      ${item.category?`<div class="card-category">${escHtml(item.category)}</div>`:''}
       <div class="card-title">${escHtml(item.title)}</div>
-      ${item.desc ? `<div class="card-desc">${escHtml(item.desc)}</div>` : ''}
+      ${item.desc?`<div class="card-desc">${escHtml(item.desc)}</div>`:''}
       <div class="card-meta">
         ${statusBadge}
-        ${item.price ? `<span class="badge badge-price">💰 ${escHtml(item.price)}</span>` : ''}
-        ${item.slots > 1 ? `<span class="badge" style="background:rgba(255,255,255,0.05);color:var(--muted)">👥 ${item.slots} Plätze</span>` : ''}
+        ${item.price?`<span class="badge badge-price">💰 ${escHtml(item.price)}</span>`:''}
+        ${item.slots>1?`<span class="badge" style="background:rgba(255,255,255,0.05);color:var(--muted)">👥 ${item.slots} Plätze</span>`:''}
       </div>
       ${regsHTML}
     </div>
@@ -365,153 +395,47 @@ function cardHTML(item) {
   </div>`;
 }
 
-// ── FILTER ──────────────────────────────────────────────
-function setFilter(filter, btn) {
-  currentFilter = filter;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  render();
-}
+function setFilter(f, btn) { currentFilter=f; document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); btn.classList.add('active'); render(); }
 
-// ── ADD ─────────────────────────────────────────────────
 function addItem() {
   const title = document.getElementById('newTitle').value.trim();
   if (!title) { toast('Bitte einen Titel eingeben.', 'error'); return; }
-  const item = {
-    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-    title, desc: document.getElementById('newDesc').value.trim(),
-    category: document.getElementById('newCategory').value.trim(),
-    image: document.getElementById('newImage').value.trim(),
-    emoji: document.getElementById('newEmoji').value.trim() || '📦',
-    price: document.getElementById('newPrice').value.trim(),
-    slots: Math.max(1, parseInt(document.getElementById('newSlots').value) || 1),
-    registrations: [], locked: false, created: Date.now()
-  };
-  items.unshift(item);
-  save(); clearForm();
-  toast(`"${title}" hinzugefügt! ✓`, 'success');
+  items.unshift({ id: Date.now().toString(36)+Math.random().toString(36).slice(2,6), title, desc: document.getElementById('newDesc').value.trim(), category: document.getElementById('newCategory').value.trim(), image: document.getElementById('newImage').value.trim(), emoji: document.getElementById('newEmoji').value.trim()||'📦', price: document.getElementById('newPrice').value.trim(), slots: Math.max(1,parseInt(document.getElementById('newSlots').value)||1), registrations: [], locked: false, created: Date.now() });
+  saveItems(); clearForm(); toast(`"${title}" hinzugefügt! ✓`, 'success');
 }
+function clearForm() { ['newTitle','newDesc','newCategory','newImage','newEmoji','newPrice'].forEach(id=>document.getElementById(id).value=''); document.getElementById('newSlots').value='1'; }
 
-function clearForm() {
-  ['newTitle','newDesc','newCategory','newImage','newEmoji','newPrice'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('newSlots').value = '1';
-}
+function askDelete(id) { pendingDeleteId=id; const item=items.find(i=>i.id===id); document.getElementById('deleteModalText').textContent=`"${item?item.title:'Dieser Artikel'}" wird unwiderruflich gelöscht.`; openModal('deleteModal'); }
+function confirmDelete() { if(!pendingDeleteId)return; const item=items.find(i=>i.id===pendingDeleteId); items=items.filter(i=>i.id!==pendingDeleteId); saveItems(); closeModal('deleteModal'); toast(`"${item?item.title:'Artikel'}" gelöscht.`,'success'); pendingDeleteId=null; }
 
-// ── DELETE ──────────────────────────────────────────────
-function askDelete(id) {
-  pendingDeleteId = id;
-  const item = items.find(i => i.id === id);
-  document.getElementById('deleteModalText').textContent = `"${item ? item.title : 'Dieser Artikel'}" wird unwiderruflich gelöscht.`;
-  openModal('deleteModal');
-}
-function confirmDelete() {
-  if (!pendingDeleteId) return;
-  const item = items.find(i => i.id === pendingDeleteId);
-  items = items.filter(i => i.id !== pendingDeleteId);
-  save(); closeModal('deleteModal');
-  toast(`"${item ? item.title : 'Artikel'}" gelöscht.`, 'success');
-  pendingDeleteId = null;
-}
+function askUnreg(itemId, name) { pendingUnreg={itemId,name}; document.getElementById('unregModalText').textContent=`Reservierung von "${name}" entfernen?`; openModal('unregModal'); }
+function confirmUnreg() { if(!pendingUnreg)return; const {itemId,name}=pendingUnreg; const item=items.find(i=>i.id===itemId); if(item){item.registrations=getRegs(item).filter(r=>getRegName(r)!==name); saveItems(); toast(`${name} entfernt.`,'success');} closeModal('unregModal'); pendingUnreg=null; }
 
-// ── UNREGISTER ──────────────────────────────────────────
-function askUnreg(itemId, name) {
-  pendingUnreg = { itemId, name };
-  document.getElementById('unregModalText').textContent = `Reservierung von "${name}" entfernen?`;
-  openModal('unregModal');
-}
-function confirmUnreg() {
-  if (!pendingUnreg) return;
-  const { itemId, name } = pendingUnreg;
-  const item = items.find(i => i.id === itemId);
-  if (item) { item.registrations = item.registrations.filter(r => r !== name); save(); toast(`${name} entfernt.`, 'success'); }
-  closeModal('unregModal'); pendingUnreg = null;
-}
+function toggleLock(id) { const item=items.find(i=>i.id===id); if(!item)return; item.locked=!item.locked; saveItems(); toast(item.locked?`"${item.title}" gesperrt.`:`"${item.title}" entsperrt.`,'success'); }
 
-// ── LOCK ────────────────────────────────────────────────
-function toggleLock(id) {
-  const item = items.find(i => i.id === id);
-  if (!item) return;
-  item.locked = !item.locked;
-  save();
-  toast(item.locked ? `"${item.title}" gesperrt.` : `"${item.title}" entsperrt.`, 'success');
-}
+function openEdit(id) { const item=items.find(i=>i.id===id); if(!item)return; editingId=id; document.getElementById('editTitle').value=item.title; document.getElementById('editDesc').value=item.desc||''; document.getElementById('editPrice').value=item.price||''; document.getElementById('editSlots').value=item.slots; document.getElementById('editSlotsLabel').textContent=`Plätze (belegt: ${getRegs(item).length})`; openModal('editModal'); setTimeout(()=>document.getElementById('editTitle').focus(),200); }
+function saveEdit() { if(!editingId)return; const item=items.find(i=>i.id===editingId); if(!item)return; const t=document.getElementById('editTitle').value.trim(); if(!t){toast('Titel darf nicht leer sein.','error');return;} const s=parseInt(document.getElementById('editSlots').value); if(isNaN(s)||s<1){toast('Ungültige Anzahl.','error');return;} if(s<getRegs(item).length){toast(`Mindestens ${getRegs(item).length} Plätze nötig.`,'error');return;} item.title=t; item.desc=document.getElementById('editDesc').value.trim(); item.price=document.getElementById('editPrice').value.trim(); item.slots=s; saveItems(); closeModal('editModal'); toast('Aktualisiert ✓','success'); editingId=null; }
 
-// ── EDIT ────────────────────────────────────────────────
-function openEdit(id) {
-  const item = items.find(i => i.id === id);
-  if (!item) return;
-  editingId = id;
-  document.getElementById('editTitle').value = item.title;
-  document.getElementById('editDesc').value = item.desc || '';
-  document.getElementById('editPrice').value = item.price || '';
-  document.getElementById('editSlots').value = item.slots;
-  document.getElementById('editSlotsLabel').textContent = `Plätze (aktuell belegt: ${(item.registrations||[]).length})`;
-  openModal('editModal');
-  setTimeout(() => document.getElementById('editTitle').focus(), 200);
-}
-function saveEdit() {
-  if (!editingId) return;
-  const item = items.find(i => i.id === editingId);
-  if (!item) return;
-  const newTitle = document.getElementById('editTitle').value.trim();
-  if (!newTitle) { toast('Titel darf nicht leer sein.', 'error'); return; }
-  const parsedSlots = parseInt(document.getElementById('editSlots').value);
-  if (isNaN(parsedSlots) || parsedSlots < 1) { toast('Ungültige Anzahl.', 'error'); return; }
-  if (parsedSlots < (item.registrations||[]).length) { toast(`Mindestens ${item.registrations.length} Plätze nötig.`, 'error'); return; }
-  item.title = newTitle;
-  item.desc  = document.getElementById('editDesc').value.trim();
-  item.price = document.getElementById('editPrice').value.trim();
-  item.slots = parsedSlots;
-  save(); closeModal('editModal'); toast('Aktualisiert ✓', 'success'); editingId = null;
-}
-
-// ── LOGIN / LOGOUT ───────────────────────────────────────
 function checkPassword() {
-  const pw = document.getElementById('passwordInput').value;
-  if (pw === ADMIN_PASSWORD) {
-    document.getElementById('loginScreen').style.display = 'none';
+  if(document.getElementById('passwordInput').value===ADMIN_PASSWORD){
+    document.getElementById('loginScreen').style.display='none';
     document.getElementById('adminContent').classList.add('visible');
-    document.getElementById('logoutBtn').style.display = '';
+    document.getElementById('logoutBtn').style.display='';
     document.getElementById('loginError').classList.remove('visible');
-    loadFromFirebase();
-    toast('Willkommen im Admin-Bereich ✓', 'success');
-  } else {
-    document.getElementById('loginError').classList.add('visible');
-    document.getElementById('passwordInput').value = '';
-    document.getElementById('passwordInput').focus();
-  }
+    loadAll(); toast('Willkommen ✓','success');
+  } else { document.getElementById('loginError').classList.add('visible'); document.getElementById('passwordInput').value=''; document.getElementById('passwordInput').focus(); }
 }
-function logout() {
-  document.getElementById('loginScreen').style.display = '';
-  document.getElementById('adminContent').classList.remove('visible');
-  document.getElementById('logoutBtn').style.display = 'none';
-  document.getElementById('passwordInput').value = '';
-  toast('Abgemeldet.', 'success');
-}
+function logout() { document.getElementById('loginScreen').style.display=''; document.getElementById('adminContent').classList.remove('visible'); document.getElementById('logoutBtn').style.display='none'; document.getElementById('passwordInput').value=''; }
 
-// ── MODAL HELPERS ────────────────────────────────────────
-function openModal(id) { document.getElementById(id).classList.add('visible'); }
-function closeModal(id) { document.getElementById(id).classList.remove('visible'); }
-document.querySelectorAll('.modal-overlay').forEach(overlay => {
-  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('visible'); });
-});
+function openModal(id){document.getElementById(id).classList.add('visible');}
+function closeModal(id){document.getElementById(id).classList.remove('visible');}
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('visible');}));
 
-// ── TOAST ────────────────────────────────────────────────
-function toast(msg, type = 'success') {
-  const c = document.getElementById('toastContainer');
-  const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  el.innerHTML = `<span>${type === 'success' ? '✓' : '!'}</span> ${escHtml(msg)}`;
-  c.appendChild(el);
-  setTimeout(() => el.remove(), 3200);
-}
-
-function escHtml(str) {
-  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
-}
+function toast(msg,type='success'){const c=document.getElementById('toastContainer');const el=document.createElement('div');el.className=`toast ${type}`;el.innerHTML=`<span>${type==='success'?'✓':'!'}</span> ${escHtml(msg)}`;c.appendChild(el);setTimeout(()=>el.remove(),3200);}
+function escHtml(str){return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
 
 document.getElementById('passwordInput').focus();
-document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.visible').forEach(m => m.classList.remove('visible')); });
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-overlay.visible').forEach(m=>m.classList.remove('visible'));});
 </script>
 </body>
 </html>
