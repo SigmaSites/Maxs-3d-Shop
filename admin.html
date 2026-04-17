@@ -72,6 +72,16 @@
     .fil-add-row input::placeholder { color: var(--muted); }
     .fil-empty { font-size: 0.85rem; color: var(--muted); text-align: center; padding: 1rem; }
 
+    /* IMAGE UPLOAD */
+    .img-upload-box {
+      width: 100%; aspect-ratio: 16/9; background: var(--surface2); border: 2px dashed var(--border);
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: border-color 0.15s; overflow: hidden; position: relative;
+      font-size: 0.9rem; color: var(--muted);
+    }
+    .img-upload-box:hover { border-color: var(--accent); color: var(--text); }
+    .img-upload-box.has-image { border-style: solid; border-color: rgba(232,201,126,0.3); }
+
     .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.75rem; }
     .section-header h2 { font-family: 'Playfair Display', serif; font-size: 1.75rem; font-weight: 700; }
     .filter-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; }
@@ -181,7 +191,15 @@
         <div class="form-group"><label>Titel *</label><input type="text" id="newTitle" placeholder="z.B. Vase" /></div>
         <div class="form-group"><label>Kategorie</label><input type="text" id="newCategory" placeholder="z.B. Deko…" /></div>
         <div class="form-group full"><label>Beschreibung</label><textarea id="newDesc" placeholder="Kurze Beschreibung…"></textarea></div>
-        <div class="form-group"><label>Bild-URL (optional)</label><input type="url" id="newImage" placeholder="https://…" /></div>
+        <div class="form-group full">
+          <label>Bild hochladen (optional)</label>
+          <div class="img-upload-box" id="imgUploadBox" onclick="document.getElementById('newImageFile').click()">
+            <div id="imgUploadPlaceholder">📁 Klicken zum Hochladen</div>
+            <img id="imgPreview" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:6px;" />
+          </div>
+          <input type="file" id="newImageFile" accept="image/*" style="display:none" onchange="handleImageUpload(this)" />
+          <button type="button" class="btn btn-ghost btn-sm" id="imgRemoveBtn" style="display:none;margin-top:0.4rem;" onclick="removeImage()">✕ Bild entfernen</button>
+        </div>
         <div class="form-group"><label>Emoji (Platzhalter)</label><input type="text" id="newEmoji" placeholder="🖨️" maxlength="4" /></div>
         <div class="form-group"><label>Preis / Info (optional)</label><input type="text" id="newPrice" placeholder="z.B. Kostenlos, 5 €…" /></div>
         <div class="form-group"><label>Max. Reservierungen</label><input type="number" id="newSlots" value="1" min="1" max="99" /></div>
@@ -249,7 +267,7 @@
 
 <script>
 const ADMIN_PASSWORD = "MaxsShop1234567890MaximilianMichael13!";
-const FIREBASE_URL   = "https://dshop-23436-default-rtdb.europe-west1.firebasedatabase.app";
+const FIREBASE_URL   = "https://dshop-23436-default-rtdb.europe-west1.firebasedatabase.app/";
 
 let items = [], filaments = [];
 let currentFilter = 'all';
@@ -400,10 +418,10 @@ function setFilter(f, btn) { currentFilter=f; document.querySelectorAll('.tab').
 function addItem() {
   const title = document.getElementById('newTitle').value.trim();
   if (!title) { toast('Bitte einen Titel eingeben.', 'error'); return; }
-  items.unshift({ id: Date.now().toString(36)+Math.random().toString(36).slice(2,6), title, desc: document.getElementById('newDesc').value.trim(), category: document.getElementById('newCategory').value.trim(), image: document.getElementById('newImage').value.trim(), emoji: document.getElementById('newEmoji').value.trim()||'📦', price: document.getElementById('newPrice').value.trim(), slots: Math.max(1,parseInt(document.getElementById('newSlots').value)||1), registrations: [], locked: false, created: Date.now() });
+  items.unshift({ id: Date.now().toString(36)+Math.random().toString(36).slice(2,6), title, desc: document.getElementById('newDesc').value.trim(), category: document.getElementById('newCategory').value.trim(), image: currentImageBase64 || '', emoji: document.getElementById('newEmoji').value.trim()||'📦', price: document.getElementById('newPrice').value.trim(), slots: Math.max(1,parseInt(document.getElementById('newSlots').value)||1), registrations: [], locked: false, created: Date.now() });
   saveItems(); clearForm(); toast(`"${title}" hinzugefügt! ✓`, 'success');
 }
-function clearForm() { ['newTitle','newDesc','newCategory','newImage','newEmoji','newPrice'].forEach(id=>document.getElementById(id).value=''); document.getElementById('newSlots').value='1'; }
+function clearForm() { ['newTitle','newDesc','newCategory','newEmoji','newPrice'].forEach(id=>document.getElementById(id).value=''); document.getElementById('newSlots').value='1'; removeImage(); }
 
 function askDelete(id) { pendingDeleteId=id; const item=items.find(i=>i.id===id); document.getElementById('deleteModalText').textContent=`"${item?item.title:'Dieser Artikel'}" wird unwiderruflich gelöscht.`; openModal('deleteModal'); }
 function confirmDelete() { if(!pendingDeleteId)return; const item=items.find(i=>i.id===pendingDeleteId); items=items.filter(i=>i.id!==pendingDeleteId); saveItems(); closeModal('deleteModal'); toast(`"${item?item.title:'Artikel'}" gelöscht.`,'success'); pendingDeleteId=null; }
@@ -415,6 +433,42 @@ function toggleLock(id) { const item=items.find(i=>i.id===id); if(!item)return; 
 
 function openEdit(id) { const item=items.find(i=>i.id===id); if(!item)return; editingId=id; document.getElementById('editTitle').value=item.title; document.getElementById('editDesc').value=item.desc||''; document.getElementById('editPrice').value=item.price||''; document.getElementById('editSlots').value=item.slots; document.getElementById('editSlotsLabel').textContent=`Plätze (belegt: ${getRegs(item).length})`; openModal('editModal'); setTimeout(()=>document.getElementById('editTitle').focus(),200); }
 function saveEdit() { if(!editingId)return; const item=items.find(i=>i.id===editingId); if(!item)return; const t=document.getElementById('editTitle').value.trim(); if(!t){toast('Titel darf nicht leer sein.','error');return;} const s=parseInt(document.getElementById('editSlots').value); if(isNaN(s)||s<1){toast('Ungültige Anzahl.','error');return;} if(s<getRegs(item).length){toast(`Mindestens ${getRegs(item).length} Plätze nötig.`,'error');return;} item.title=t; item.desc=document.getElementById('editDesc').value.trim(); item.price=document.getElementById('editPrice').value.trim(); item.slots=s; saveItems(); closeModal('editModal'); toast('Aktualisiert ✓','success'); editingId=null; }
+
+// ── IMAGE UPLOAD ─────────────────────────────────────────
+let currentImageBase64 = '';
+
+function handleImageUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 600000) { toast('Bild zu groß! Bitte unter 600 KB.', 'error'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    currentImageBase64 = e.target.result;
+    const preview = document.getElementById('imgPreview');
+    const placeholder = document.getElementById('imgUploadPlaceholder');
+    const box = document.getElementById('imgUploadBox');
+    preview.src = currentImageBase64;
+    preview.style.display = 'block';
+    placeholder.style.display = 'none';
+    box.classList.add('has-image');
+    document.getElementById('imgRemoveBtn').style.display = '';
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeImage() {
+  currentImageBase64 = '';
+  const preview = document.getElementById('imgPreview');
+  const placeholder = document.getElementById('imgUploadPlaceholder');
+  const box = document.getElementById('imgUploadBox');
+  if (preview) { preview.src = ''; preview.style.display = 'none'; }
+  if (placeholder) placeholder.style.display = '';
+  if (box) box.classList.remove('has-image');
+  const btn = document.getElementById('imgRemoveBtn');
+  if (btn) btn.style.display = 'none';
+  const fileInput = document.getElementById('newImageFile');
+  if (fileInput) fileInput.value = '';
+}
 
 function checkPassword() {
   if(document.getElementById('passwordInput').value===ADMIN_PASSWORD){
