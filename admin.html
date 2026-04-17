@@ -440,7 +440,7 @@ let currentImageBase64 = '';
 function handleImageUpload(input) {
   const file = input.files[0];
   if (!file) return;
-  if (file.size > 600000) { toast('Bild zu groß! Bitte unter 600 KB.', 'error'); return; }
+  if (file.size > 4000000) { toast('Bild zu groß! Bitte unter 4 MB.', 'error'); return; }
   const reader = new FileReader();
   reader.onload = e => {
     currentImageBase64 = e.target.result;
