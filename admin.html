@@ -191,15 +191,7 @@
         <div class="form-group"><label>Titel *</label><input type="text" id="newTitle" placeholder="z.B. Vase" /></div>
         <div class="form-group"><label>Kategorie</label><input type="text" id="newCategory" placeholder="z.B. Deko…" /></div>
         <div class="form-group full"><label>Beschreibung</label><textarea id="newDesc" placeholder="Kurze Beschreibung…"></textarea></div>
-        <div class="form-group full">
-          <label>Bild hochladen (optional)</label>
-          <div class="img-upload-box" id="imgUploadBox" onclick="document.getElementById('newImageFile').click()">
-            <div id="imgUploadPlaceholder">📁 Klicken zum Hochladen</div>
-            <img id="imgPreview" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:6px;" />
-          </div>
-          <input type="file" id="newImageFile" accept="image/*" style="display:none" onchange="handleImageUpload(this)" />
-          <button type="button" class="btn btn-ghost btn-sm" id="imgRemoveBtn" style="display:none;margin-top:0.4rem;" onclick="removeImage()">✕ Bild entfernen</button>
-        </div>
+        <div class="form-group"><label>Bild-URL (optional)</label><input type="url" id="newImage" placeholder="https://…" /></div>
         <div class="form-group"><label>Emoji (Platzhalter)</label><input type="text" id="newEmoji" placeholder="🖨️" maxlength="4" /></div>
         <div class="form-group"><label>Preis / Info (optional)</label><input type="text" id="newPrice" placeholder="z.B. Kostenlos, 5 €…" /></div>
         <div class="form-group"><label>Max. Reservierungen</label><input type="number" id="newSlots" value="1" min="1" max="99" /></div>
@@ -418,10 +410,10 @@ function setFilter(f, btn) { currentFilter=f; document.querySelectorAll('.tab').
 function addItem() {
   const title = document.getElementById('newTitle').value.trim();
   if (!title) { toast('Bitte einen Titel eingeben.', 'error'); return; }
-  items.unshift({ id: Date.now().toString(36)+Math.random().toString(36).slice(2,6), title, desc: document.getElementById('newDesc').value.trim(), category: document.getElementById('newCategory').value.trim(), image: currentImageBase64 || '', emoji: document.getElementById('newEmoji').value.trim()||'📦', price: document.getElementById('newPrice').value.trim(), slots: Math.max(1,parseInt(document.getElementById('newSlots').value)||1), registrations: [], locked: false, created: Date.now() });
+  items.unshift({ id: Date.now().toString(36)+Math.random().toString(36).slice(2,6), title, desc: document.getElementById('newDesc').value.trim(), category: document.getElementById('newCategory').value.trim(), image: document.getElementById('newImage').value.trim(), emoji: document.getElementById('newEmoji').value.trim()||'📦', price: document.getElementById('newPrice').value.trim(), slots: Math.max(1,parseInt(document.getElementById('newSlots').value)||1), registrations: [], locked: false, created: Date.now() });
   saveItems(); clearForm(); toast(`"${title}" hinzugefügt! ✓`, 'success');
 }
-function clearForm() { ['newTitle','newDesc','newCategory','newEmoji','newPrice'].forEach(id=>document.getElementById(id).value=''); document.getElementById('newSlots').value='1'; removeImage(); }
+function clearForm() { ['newTitle','newDesc','newCategory','newImage','newEmoji','newPrice'].forEach(id=>document.getElementById(id).value=''); document.getElementById('newSlots').value='1'; }
 
 function askDelete(id) { pendingDeleteId=id; const item=items.find(i=>i.id===id); document.getElementById('deleteModalText').textContent=`"${item?item.title:'Dieser Artikel'}" wird unwiderruflich gelöscht.`; openModal('deleteModal'); }
 function confirmDelete() { if(!pendingDeleteId)return; const item=items.find(i=>i.id===pendingDeleteId); items=items.filter(i=>i.id!==pendingDeleteId); saveItems(); closeModal('deleteModal'); toast(`"${item?item.title:'Artikel'}" gelöscht.`,'success'); pendingDeleteId=null; }
