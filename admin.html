@@ -134,6 +134,13 @@
     .edit-field input:focus, .edit-field textarea:focus { border-color: var(--accent); }
     .edit-field textarea { resize: vertical; min-height: 70px; }
 
+    /* CATEGORY SECTIONS */
+    .cat-section { grid-column: 1 / -1; margin-top: 1rem; }
+    .cat-section:first-child { margin-top: 0; }
+    .cat-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; }
+    .cat-label { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--accent); white-space: nowrap; }
+    .cat-line { flex: 1; height: 1px; background: var(--border); }
+
     .empty { text-align: center; padding: 5rem 2rem; color: var(--muted); }
     .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; }
     .empty h3 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--text); margin-bottom: 0.5rem; }
@@ -351,7 +358,20 @@ function render() {
     grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">${icon}</div><h3>${title}</h3></div>`;
     return;
   }
-  grid.innerHTML = filtered.map(item => cardHTML(item)).join('');
+  // Group by category alphabetically
+  const groups = {};
+  filtered.forEach(item => {
+    const cat = (item.category || 'Sonstiges').trim();
+    if (!groups[cat]) groups[cat] = [];
+    groups[cat].push(item);
+  });
+  const sortedCats = Object.keys(groups).sort((a, b) => a.localeCompare(b, 'de'));
+  let html = '';
+  sortedCats.forEach(cat => {
+    html += `<div class="cat-section" style="grid-column:1/-1"><div class="cat-header"><span class="cat-label">${escHtml(cat)}</span><div class="cat-line"></div></div></div>`;
+    groups[cat].forEach(item => { html += cardHTML(item); });
+  });
+  grid.innerHTML = html;
   grid.querySelectorAll('.card').forEach((c, i) => c.style.animationDelay = `${i*0.06}s`);
 }
 
