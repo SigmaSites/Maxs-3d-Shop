@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>404 - Entführt!</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0b0c10;
+            color: #fff;
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            /* Hier wird der normale Mauszeiger versteckt, sobald er auf die Seite kommt */
+            cursor: none; 
+        }
+
+        .error-container {
+            text-align: center;
+            z-index: 2;
+        }
+
+        h1 { font-size: 6rem; margin: 0; color: #66fcf1; }
+        p { font-size: 1.5rem; }
+
+        /* Das "UFO", das stattdessen deinem echten Mauszeiger folgt */
+        #ufo-cursor {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            background: url('https://icons8.com') no-repeat center;
+            background-size: contain;
+            pointer-events: none; /* Verhindert, dass das UFO Klicks blockiert */
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            transition: width 0.2s, height 0.2s;
+        }
+        
+        /* Ein optionaler Traktorstrahl unter dem UFO */
+        #ufo-cursor::after {
+            content: '';
+            position: absolute;
+            top: 50px;
+            left: 15px;
+            width: 30px;
+            height: 150px;
+            background: linear-gradient(to bottom, rgba(102, 252, 241, 0.4), transparent);
+            clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="ufo-cursor"></div>
+
+    <div class="error-container">
+        <h1>404</h1>
+        <p>Uuups... Ein UFO hat deinen Mauszeiger entführt!</p>
+        <a href="/" style="color: #66fcf1; text-decoration: none; border: 2px solid #66fcf1; padding: 10px 20px; margin-top: 20px; display: inline-block; cursor: pointer;">Zurück zur Erde</a>
+    </div>
+
+    <script>
+        const ufo = document.getElementById('ufo-cursor');
+        
+        // Das UFO bewegt sich exakt dorthin, wo die Maus ist
+        document.addEventListener('mousemove', (e) => {
+            ufo.style.left = e.clientX + 'px';
+            ufo.style.top = e.clientY + 'px';
+        });
+    </script>
+</body>
+</html>
