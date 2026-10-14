@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="google" content="notranslate">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>404</title>
+  <title>Page not found – Sketch (recreation)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -110,28 +110,33 @@
     }
     .actions { display: flex; flex-wrap: wrap; gap: 14px; }
 
-    .scene { position: relative; z-index: 2; display: flex; justify-content: center; align-self: stretch; height: 100%; min-height: 0; }
-    .scene svg { width: 100%; max-width: 560px; height: 100%; overflow: visible; }
+    .scene { position: relative; z-index: 2; display: flex; justify-content: center; align-items: center; align-self: stretch; height: 100%; min-height: 0; container-type: size; }
+    .stage { position: relative; width: min(100%, 560px); aspect-ratio: 560 / 600; max-height: 100%; }
+    @supports (width: 1cqw) {
+      .stage { width: min(100cqw, 560px, calc(100cqh * 560 / 600)); max-height: none; }
+    }
+    .stage svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; will-change: transform; }
 
-    /* gentle hover of the saucer + pulsing beam */
+    /* gentle hover of the saucer + pulsing beam
+       every part is its own layer, so only small layers move - no repaint of the saucer */
     .ufo { animation: hover 4.5s ease-in-out infinite; }
-    .cursor { animation: lift 5s ease-in-out infinite; transform-origin: 300px 450px; }
-    .shadow { animation: shade 5s ease-in-out infinite; transform-origin: 280px 540px; }
+    .cursor { animation: lift 5s ease-in-out infinite; transform-origin: 53.6% 75%; }
+    .shadow { animation: shade 5s ease-in-out infinite; transform-origin: 50% 90%; }
     .beam-glow { animation: glow 4.5s ease-in-out infinite; }
-    @keyframes hover { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    @keyframes hover { 0%,100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -1.33%, 0); } }
     @keyframes lift {
-      0%   { transform: translate(0, 0) rotate(0deg); }
-      20%  { transform: translate(-22px, -30px) rotate(-9deg); }
-      45%  { transform: translate(18px, -52px) rotate(8deg); }
-      70%  { transform: translate(-14px, -34px) rotate(-6deg); }
-      100% { transform: translate(0, 0) rotate(0deg); }
+      0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
+      20%  { transform: translate3d(-3.93%, -5%, 0) rotate(-9deg); }
+      45%  { transform: translate3d(3.21%, -8.67%, 0) rotate(8deg); }
+      70%  { transform: translate3d(-2.5%, -5.67%, 0) rotate(-6deg); }
+      100% { transform: translate3d(0, 0, 0) rotate(0deg); }
     }
     @keyframes shade {
-      0%   { transform: translate(0, 0) scale(1); opacity: 1; }
-      20%  { transform: translate(-6px, 0) scale(.92); opacity: .85; }
-      45%  { transform: translate(5px, 0) scale(.8); opacity: .65; }
-      70%  { transform: translate(-4px, 0) scale(.9); opacity: .8; }
-      100% { transform: translate(0, 0) scale(1); opacity: 1; }
+      0%   { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+      20%  { transform: translate3d(-1.07%, 0, 0) scale(.92); opacity: .85; }
+      45%  { transform: translate3d(.89%, 0, 0) scale(.8); opacity: .65; }
+      70%  { transform: translate3d(-.71%, 0, 0) scale(.9); opacity: .8; }
+      100% { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
     }
     @keyframes glow  { 0%,100% { opacity: .85; } 50% { opacity: 1; } }
     @media (prefers-reduced-motion: reduce) {
@@ -143,7 +148,6 @@
       .hero { grid-template-columns: 1fr; grid-template-rows: auto 1fr; align-content: center; padding: 24px; }
       .scene { margin-top: 8px; }
       body::before {
-      
         background:
           radial-gradient(ellipse 80% 40% at 50% 78%, rgba(124,203,61,.55) 0%, rgba(124,203,61,0) 70%),
           linear-gradient(180deg, #f8efbf 0%, #f3dd85 30%, #efc75c 48%, #c3da4c 64%, #8fcf3f 78%, #a9de7c 90%, #d3efb7 100%);
@@ -166,7 +170,58 @@
       </div>
 
       <div class="scene">
-        <svg viewBox="0 0 560 600" role="img" aria-label="A flying saucer abducting a mouse cursor">
+        <div class="stage" role="img" aria-label="A flying saucer abducting a mouse cursor">
+        <svg class="beam-glow" viewBox="0 0 560 600" aria-hidden="true">
+          <defs>
+            <linearGradient id="cone" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#e9ec6a" stop-opacity=".95"/>
+              <stop offset=".6" stop-color="#bfe05a" stop-opacity=".8"/>
+              <stop offset="1" stop-color="#a6d84a" stop-opacity=".55"/>
+            </linearGradient>
+            <radialGradient id="pad" cx=".5" cy=".55" r=".55">
+              <stop offset="0" stop-color="#dcea7e"/>
+              <stop offset=".65" stop-color="#cde26e"/>
+              <stop offset="1" stop-color="#8fc43a"/>
+            </radialGradient>
+          </defs>
+
+          <!-- beam + landing pad -->
+          <g>
+            <path d="M190 390 L370 390 L450 520 L110 520 Z" fill="url(#cone)"/>
+            <ellipse cx="280" cy="520" rx="170" ry="62" fill="url(#pad)"/>
+            <ellipse cx="280" cy="520" rx="170" ry="62" fill="none" stroke="#7fb832" stroke-width="3" opacity=".35"/>
+          </g>
+        </svg>
+        <svg class="shadow" viewBox="0 0 560 600" aria-hidden="true">
+
+          <!-- shadow of the cursor on the pad -->
+          <g><g transform="translate(-60 100) translate(330 450) scale(.9 .6) translate(-330 -450) rotate(20 330 450)" fill="#45433f" opacity=".92">
+            <path d="M352 408 L352 484 L332 466 L316 502 L302 496 L318 462 L294 462 Z"/>
+          </g></g>
+        </svg>
+        <svg class="cursor" viewBox="0 0 560 600" aria-hidden="true">
+          <defs>
+            <linearGradient id="arrowTop" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#ffffff"/>
+              <stop offset="1" stop-color="#cfcfd3"/>
+            </linearGradient>
+          </defs>
+
+          <!-- cursor being lifted -->
+          <g>
+            <g transform="translate(-30 14) rotate(20 330 450)">
+              <!-- extruded side: one solid body made of real side faces -->
+              <path d="M352 408 L352 484 L359 492 L359 416 Z" fill="#828286" stroke="#828286" stroke-width="1" stroke-linejoin="round"/>
+              <path d="M352 484 L332 466 L339 474 L359 492 Z" fill="#a5a5a9" stroke="#a5a5a9" stroke-width="1" stroke-linejoin="round"/>
+              <path d="M332 466 L316 502 L323 510 L339 474 Z" fill="#7d7d81" stroke="#7d7d81" stroke-width="1" stroke-linejoin="round"/>
+              <path d="M316 502 L302 496 L309 504 L323 510 Z" fill="#9a9a9e" stroke="#9a9a9e" stroke-width="1" stroke-linejoin="round"/>
+              <path d="M318 462 L294 462 L301 470 L325 470 Z" fill="#8d8d91" stroke="#8d8d91" stroke-width="1" stroke-linejoin="round"/>
+              <!-- top face -->
+              <path d="M352 408 L352 484 L332 466 L316 502 L302 496 L318 462 L294 462 Z" fill="url(#arrowTop)" stroke="#bdbdc2" stroke-width="1"/>
+            </g>
+          </g>
+        </svg>
+        <svg class="ufo" viewBox="0 0 560 600" aria-hidden="true">
           <defs>
             <linearGradient id="rimEdge" x1="0" y1="0" x2="1" y2="0">
               <stop offset="0" stop-color="#4d4d50"/>
@@ -194,50 +249,13 @@
               <stop offset="0" stop-color="#ffffff"/>
               <stop offset="1" stop-color="#9a9a9f"/>
             </radialGradient>
-            <linearGradient id="cone" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#e9ec6a" stop-opacity=".95"/>
-              <stop offset=".6" stop-color="#bfe05a" stop-opacity=".8"/>
-              <stop offset="1" stop-color="#a6d84a" stop-opacity=".55"/>
-            </linearGradient>
-            <radialGradient id="pad" cx=".5" cy=".55" r=".55">
-              <stop offset="0" stop-color="#dcea7e"/>
-              <stop offset=".65" stop-color="#cde26e"/>
-              <stop offset="1" stop-color="#8fc43a"/>
-            </radialGradient>
-            <linearGradient id="arrowTop" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#ffffff"/>
-              <stop offset="1" stop-color="#cfcfd3"/>
-            </linearGradient>
             <clipPath id="clipTop"><ellipse cx="280" cy="296" rx="236" ry="100"/></clipPath>
             <clipPath id="clipFrTop"><ellipse cx="280" cy="200" rx="100" ry="40"/></clipPath>
             <clipPath id="clipFrBody"><path d="M152 290 L180 200 L380 200 L408 290 A128 52 0 0 1 152 290 Z"/></clipPath>
           </defs>
 
-          <!-- beam + landing pad -->
-          <g class="beam-glow">
-            <path d="M190 390 L370 390 L450 520 L110 520 Z" fill="url(#cone)"/>
-            <ellipse cx="280" cy="520" rx="170" ry="62" fill="url(#pad)"/>
-            <ellipse cx="280" cy="520" rx="170" ry="62" fill="none" stroke="#7fb832" stroke-width="3" opacity=".35"/>
-          </g>
-
-          <!-- shadow of the cursor on the pad -->
-          <g class="shadow"><g transform="translate(-60 100) translate(330 450) scale(.9 .6) translate(-330 -450) rotate(20 330 450)" fill="#45433f" opacity=".92">
-            <path d="M352 408 L352 484 L332 466 L316 502 L302 496 L318 462 L294 462 Z"/>
-          </g></g>
-
-          <!-- cursor being lifted -->
-          <g class="cursor">
-            <g transform="translate(-30 14) rotate(20 330 450)">
-              <!-- extruded side -->
-              <path d="M352 408 L352 484 L332 466 L316 502 L302 496 L318 462 L294 462 Z" transform="translate(7 8)" fill="#8d8d92"/>
-              <path d="M352 408 L352 484 L332 466 L316 502 L302 496 L318 462 L294 462 Z" transform="translate(3.5 4)" fill="#a9a9ae"/>
-              <!-- top face -->
-              <path d="M352 408 L352 484 L332 466 L316 502 L302 496 L318 462 L294 462 Z" fill="url(#arrowTop)" stroke="#bdbdc2" stroke-width="1"/>
-            </g>
-          </g>
-
           <!-- saucer -->
-          <g class="ufo">
+          <g>
             <!-- lower rim edge -->
             <ellipse cx="280" cy="310" rx="236" ry="100" fill="url(#rimEdge)"/>
             <ellipse cx="280" cy="304" rx="236" ry="100" fill="#2b2b2e" opacity=".55"/>
@@ -353,6 +371,7 @@
             <circle cx="280" cy="112" r="12" fill="url(#knob)"/>
           </g>
         </svg>
+      </div>
       </div>
     </section>
   </main>
