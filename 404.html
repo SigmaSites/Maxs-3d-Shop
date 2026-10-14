@@ -1,77 +1,351 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en" translate="no">
 <head>
-    <meta charset="UTF-8">
-    <title>404 - Entführt!</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: #0b0c10;
-            color: #fff;
-            font-family: sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-            /* Hier wird der normale Mauszeiger versteckt, sobald er auf die Seite kommt */
-            cursor: none; 
-        }
+  <meta charset="UTF-8">
+  <meta name="google" content="notranslate">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page not found – Sketch (recreation)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fafafa;
+      --text: #111111;
+      --muted: #333333;
+      --card: #ffffff;
+      --border: #e6e6e6;
+      --btn: #000000;
+      --btn-text: #ffffff;
+    }
 
-        .error-container {
-            text-align: center;
-            z-index: 2;
-        }
+    * { box-sizing: border-box; }
 
-        h1 { font-size: 6rem; margin: 0; color: #66fcf1; }
-        p { font-size: 1.5rem; }
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
 
-        /* Das "UFO", das stattdessen deinem echten Mauszeiger folgt */
-        #ufo-cursor {
-            position: fixed;
-            width: 60px;
-            height: 60px;
-            background: url('https://icons8.com') no-repeat center;
-            background-size: contain;
-            pointer-events: none; /* Verhindert, dass das UFO Klicks blockiert */
-            transform: translate(-50%, -50%);
-            z-index: 9999;
-            transition: width 0.2s, height 0.2s;
-        }
-        
-        /* Ein optionaler Traktorstrahl unter dem UFO */
-        #ufo-cursor::after {
-            content: '';
-            position: absolute;
-            top: 50px;
-            left: 15px;
-            width: 30px;
-            height: 150px;
-            background: linear-gradient(to bottom, rgba(102, 252, 241, 0.4), transparent);
-            clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);
-            pointer-events: none;
-        }
-    </style>
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 16px;
+      border: 1px solid var(--btn);
+      cursor: pointer;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,.14); }
+    .btn-dark { background: var(--btn); color: var(--btn-text); }
+    .btn-light { background: #fff; color: var(--text); border-color: var(--border); }
+
+    /* ---------- Hero ---------- */
+    .hero {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      height: 100vh;
+      height: 100dvh;
+      padding: 40px 56px;
+      overflow: hidden;
+    }
+
+
+    /* full-screen color gradient: no white gaps, glow centered on the saucer */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 55% 70% at 74% 58%, rgba(124,203,61,.55) 0%, rgba(124,203,61,0) 70%),
+        linear-gradient(90deg,
+          #f8efbf 0%,
+          #f3dd85 24%,
+          #efc75c 44%,
+          #c3da4c 60%,
+          #8fcf3f 72%,
+          #a9de7c 86%,
+          #d3efb7 100%);
+    }
+
+    .copy { position: relative; z-index: 2; max-width: 560px; }
+    .copy h1 {
+      margin: 0 0 22px;
+      font-size: clamp(38px, 5vw, 56px);
+      line-height: 1.05;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+    .copy p {
+      margin: 0 0 30px;
+      font-size: 20px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+    .actions { display: flex; flex-wrap: wrap; gap: 14px; }
+
+    .scene { position: relative; z-index: 2; display: flex; justify-content: center; align-self: stretch; height: 100%; min-height: 0; }
+    .scene svg { width: 100%; max-width: 560px; height: 100%; overflow: visible; }
+
+    /* gentle hover of the saucer + pulsing beam */
+    .ufo { animation: hover 4.5s ease-in-out infinite; }
+    .cursor { animation: lift 5s ease-in-out infinite; transform-origin: 300px 450px; }
+    .shadow { animation: shade 5s ease-in-out infinite; transform-origin: 280px 540px; }
+    .beam-glow { animation: glow 4.5s ease-in-out infinite; }
+    @keyframes hover { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    @keyframes lift {
+      0%   { transform: translate(0, 0) rotate(0deg); }
+      20%  { transform: translate(-22px, -30px) rotate(-9deg); }
+      45%  { transform: translate(18px, -52px) rotate(8deg); }
+      70%  { transform: translate(-14px, -34px) rotate(-6deg); }
+      100% { transform: translate(0, 0) rotate(0deg); }
+    }
+    @keyframes shade {
+      0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+      20%  { transform: translate(-6px, 0) scale(.92); opacity: .85; }
+      45%  { transform: translate(5px, 0) scale(.8); opacity: .65; }
+      70%  { transform: translate(-4px, 0) scale(.9); opacity: .8; }
+      100% { transform: translate(0, 0) scale(1); opacity: 1; }
+    }
+    @keyframes glow  { 0%,100% { opacity: .85; } 50% { opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) {
+      .ufo, .cursor, .shadow, .beam-glow { animation: none; }
+    }
+
+    /* ---------- Responsive ---------- */
+    @media (max-aspect-ratio: 1/1), (max-width: 600px) {
+      .hero { grid-template-columns: 1fr; grid-template-rows: auto 1fr; align-content: center; padding: 24px; }
+      .scene { margin-top: 8px; }
+      body::before {
+        background:
+          radial-gradient(ellipse 80% 40% at 50% 78%, rgba(124,203,61,.55) 0%, rgba(124,203,61,0) 70%),
+          linear-gradient(180deg, #f8efbf 0%, #f3dd85 30%, #efc75c 48%, #c3da4c 64%, #8fcf3f 78%, #a9de7c 90%, #d3efb7 100%);
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <div id="ufo-cursor"></div>
+  <main>
+    <section class="hero">
+      <div class="copy">
+        <h1>This page<br>was abducted.</h1>
+        <p>Choose your path below. The truth is out there…</p>
+        <div class="actions">
+          <a class="btn btn-dark" href="#">Home</a>
+          <a class="btn btn-light" href="#">Get support</a>
+        </div>
+      </div>
 
-    <div class="error-container">
-        <h1>404</h1>
-        <p>Uuups... Ein UFO hat deinen Mauszeiger entführt!</p>
-        <a href="/" style="color: #66fcf1; text-decoration: none; border: 2px solid #66fcf1; padding: 10px 20px; margin-top: 20px; display: inline-block; cursor: pointer;">Zurück zur Erde</a>
-    </div>
+      <div class="scene">
+        <svg viewBox="0 0 560 600" role="img" aria-label="A flying saucer abducting a mouse cursor">
+          <defs>
+            <linearGradient id="rimEdge" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#4d4d50"/>
+              <stop offset=".35" stop-color="#8e8e92"/>
+              <stop offset=".7" stop-color="#e4e4e7"/>
+              <stop offset="1" stop-color="#bdbdc1"/>
+            </linearGradient>
+            <linearGradient id="topBase" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#8a8a8e"/>
+              <stop offset=".5" stop-color="#bcbcc0"/>
+              <stop offset="1" stop-color="#dadade"/>
+            </linearGradient>
+            <linearGradient id="frBody" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#4a4a4d"/>
+              <stop offset=".3" stop-color="#6b6b6f"/>
+              <stop offset=".62" stop-color="#b9b9bd"/>
+              <stop offset=".85" stop-color="#e9e9ec"/>
+              <stop offset="1" stop-color="#a9a9ad"/>
+            </linearGradient>
+            <linearGradient id="frTop" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#9c9ca0"/>
+              <stop offset="1" stop-color="#e2e2e5"/>
+            </linearGradient>
+            <radialGradient id="knob" cx=".35" cy=".3" r=".8">
+              <stop offset="0" stop-color="#ffffff"/>
+              <stop offset="1" stop-color="#9a9a9f"/>
+            </radialGradient>
+            <linearGradient id="cone" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#e9ec6a" stop-opacity=".95"/>
+              <stop offset=".6" stop-color="#bfe05a" stop-opacity=".8"/>
+              <stop offset="1" stop-color="#a6d84a" stop-opacity=".55"/>
+            </linearGradient>
+            <radialGradient id="pad" cx=".5" cy=".55" r=".55">
+              <stop offset="0" stop-color="#dcea7e"/>
+              <stop offset=".65" stop-color="#cde26e"/>
+              <stop offset="1" stop-color="#8fc43a"/>
+            </radialGradient>
+            <linearGradient id="arrowTop" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#ffffff"/>
+              <stop offset="1" stop-color="#cfcfd3"/>
+            </linearGradient>
+            <clipPath id="clipTop"><ellipse cx="280" cy="296" rx="236" ry="100"/></clipPath>
+            <clipPath id="clipFrTop"><ellipse cx="280" cy="200" rx="100" ry="40"/></clipPath>
+            <clipPath id="clipFrBody"><path d="M152 290 L180 200 L380 200 L408 290 A128 52 0 0 1 152 290 Z"/></clipPath>
+          </defs>
 
-    <script>
-        const ufo = document.getElementById('ufo-cursor');
-        
-        // Das UFO bewegt sich exakt dorthin, wo die Maus ist
-        document.addEventListener('mousemove', (e) => {
-            ufo.style.left = e.clientX + 'px';
-            ufo.style.top = e.clientY + 'px';
-        });
-    </script>
+          <!-- beam + landing pad -->
+          <g class="beam-glow">
+            <path d="M190 390 L370 390 L450 520 L110 520 Z" fill="url(#cone)"/>
+            <ellipse cx="280" cy="520" rx="170" ry="62" fill="url(#pad)"/>
+            <ellipse cx="280" cy="520" rx="170" ry="62" fill="none" stroke="#7fb832" stroke-width="3" opacity=".35"/>
+          </g>
+
+          <!-- shadow of the cursor on the pad -->
+          <g class="shadow"><g transform="translate(-60 100) translate(330 450) scale(.9 .6) translate(-330 -450) rotate(20 330 450)" fill="#45433f" opacity=".92">
+            <path d="M352 408 L352 484 L332 466 L316 502 L302 496 L318 462 L294 462 Z"/>
+          </g></g>
+
+          <!-- cursor being lifted -->
+          <g class="cursor">
+            <g transform="translate(-30 14) rotate(20 330 450)">
+              <!-- extruded side -->
+              <path d="M352 408 L352 484 L332 466 L316 502 L302 496 L318 462 L294 462 Z" transform="translate(7 8)" fill="#8d8d92"/>
+              <path d="M352 408 L352 484 L332 466 L316 502 L302 496 L318 462 L294 462 Z" transform="translate(3.5 4)" fill="#a9a9ae"/>
+              <!-- top face -->
+              <path d="M352 408 L352 484 L332 466 L316 502 L302 496 L318 462 L294 462 Z" fill="url(#arrowTop)" stroke="#bdbdc2" stroke-width="1"/>
+            </g>
+          </g>
+
+          <!-- saucer -->
+          <g class="ufo">
+            <!-- lower rim edge -->
+            <ellipse cx="280" cy="310" rx="236" ry="100" fill="url(#rimEdge)"/>
+            <ellipse cx="280" cy="304" rx="236" ry="100" fill="#2b2b2e" opacity=".55"/>
+            <!-- top face (brushed metal) -->
+            <ellipse cx="280" cy="296" rx="236" ry="100" fill="url(#topBase)"/>
+            <g clip-path="url(#clipTop)">
+              <path d="M280 296 L580.0 296.0 L575.4 348.1 Z" fill="#ffffff" opacity="0.260"/>
+              <path d="M280 296 L575.4 348.1 L561.9 398.6 Z" fill="#ffffff" opacity="0.219"/>
+              <path d="M280 296 L561.9 398.6 L539.8 446.0 Z" fill="#ffffff" opacity="0.170"/>
+              <path d="M280 296 L539.8 446.0 L509.8 488.8 Z" fill="#ffffff" opacity="0.116"/>
+              <path d="M280 296 L509.8 488.8 L472.8 525.8 Z" fill="#ffffff" opacity="0.059"/>
+              <path d="M280 296 L472.8 525.8 L430.0 555.8 Z" fill="#ffffff" opacity="0.000"/>
+              <path d="M280 296 L430.0 555.8 L382.6 577.9 Z" fill="#000000" opacity="0.059"/>
+              <path d="M280 296 L382.6 577.9 L332.1 591.4 Z" fill="#000000" opacity="0.116"/>
+              <path d="M280 296 L332.1 591.4 L280.0 596.0 Z" fill="#000000" opacity="0.170"/>
+              <path d="M280 296 L280.0 596.0 L227.9 591.4 Z" fill="#000000" opacity="0.219"/>
+              <path d="M280 296 L227.9 591.4 L177.4 577.9 Z" fill="#000000" opacity="0.260"/>
+              <path d="M280 296 L177.4 577.9 L130.0 555.8 Z" fill="#000000" opacity="0.294"/>
+              <path d="M280 296 L130.0 555.8 L87.2 525.8 Z" fill="#000000" opacity="0.319"/>
+              <path d="M280 296 L87.2 525.8 L50.2 488.8 Z" fill="#000000" opacity="0.335"/>
+              <path d="M280 296 L50.2 488.8 L20.2 446.0 Z" fill="#000000" opacity="0.340"/>
+              <path d="M280 296 L20.2 446.0 L-1.9 398.6 Z" fill="#000000" opacity="0.335"/>
+              <path d="M280 296 L-1.9 398.6 L-15.4 348.1 Z" fill="#000000" opacity="0.319"/>
+              <path d="M280 296 L-15.4 348.1 L-20.0 296.0 Z" fill="#000000" opacity="0.294"/>
+              <path d="M280 296 L-20.0 296.0 L-15.4 243.9 Z" fill="#000000" opacity="0.260"/>
+              <path d="M280 296 L-15.4 243.9 L-1.9 193.4 Z" fill="#000000" opacity="0.219"/>
+              <path d="M280 296 L-1.9 193.4 L20.2 146.0 Z" fill="#000000" opacity="0.170"/>
+              <path d="M280 296 L20.2 146.0 L50.2 103.2 Z" fill="#000000" opacity="0.116"/>
+              <path d="M280 296 L50.2 103.2 L87.2 66.2 Z" fill="#000000" opacity="0.059"/>
+              <path d="M280 296 L87.2 66.2 L130.0 36.2 Z" fill="#000000" opacity="0.000"/>
+              <path d="M280 296 L130.0 36.2 L177.4 14.1 Z" fill="#ffffff" opacity="0.059"/>
+              <path d="M280 296 L177.4 14.1 L227.9 0.6 Z" fill="#ffffff" opacity="0.116"/>
+              <path d="M280 296 L227.9 0.6 L280.0 -4.0 Z" fill="#ffffff" opacity="0.170"/>
+              <path d="M280 296 L280.0 -4.0 L332.1 0.6 Z" fill="#ffffff" opacity="0.219"/>
+              <path d="M280 296 L332.1 0.6 L382.6 14.1 Z" fill="#ffffff" opacity="0.260"/>
+              <path d="M280 296 L382.6 14.1 L430.0 36.2 Z" fill="#ffffff" opacity="0.294"/>
+              <path d="M280 296 L430.0 36.2 L472.8 66.2 Z" fill="#ffffff" opacity="0.319"/>
+              <path d="M280 296 L472.8 66.2 L509.8 103.2 Z" fill="#ffffff" opacity="0.335"/>
+              <path d="M280 296 L509.8 103.2 L539.8 146.0 Z" fill="#ffffff" opacity="0.340"/>
+              <path d="M280 296 L539.8 146.0 L561.9 193.4 Z" fill="#ffffff" opacity="0.335"/>
+              <path d="M280 296 L561.9 193.4 L575.4 243.9 Z" fill="#ffffff" opacity="0.319"/>
+              <path d="M280 296 L575.4 243.9 L580.0 296.0 Z" fill="#ffffff" opacity="0.294"/>
+            </g>
+            <ellipse cx="280" cy="296" rx="236" ry="100" fill="none" stroke="#f4f4f6" stroke-width="2" opacity=".6"/>
+
+            <!-- frustum body -->
+            <path d="M152 290 L180 200 L380 200 L408 290 A128 52 0 0 1 152 290 Z" fill="url(#frBody)"/>
+            <g clip-path="url(#clipFrBody)" opacity=".55">
+              <path d="M280 200 L419.3 214.0 L412.7 244.6 Z" fill="#ffffff" opacity="0.237"/>
+              <path d="M280 200 L412.7 244.6 L399.4 273.0 Z" fill="#ffffff" opacity="0.177"/>
+              <path d="M280 200 L399.4 273.0 L380.2 297.8 Z" fill="#ffffff" opacity="0.108"/>
+              <path d="M280 200 L380.2 297.8 L355.9 317.6 Z" fill="#ffffff" opacity="0.034"/>
+              <path d="M280 200 L355.9 317.6 L327.8 331.6 Z" fill="#000000" opacity="0.042"/>
+              <path d="M280 200 L327.8 331.6 L297.4 338.9 Z" fill="#000000" opacity="0.116"/>
+              <path d="M280 200 L297.4 338.9 L266.0 339.3 Z" fill="#000000" opacity="0.185"/>
+              <path d="M280 200 L266.0 339.3 L235.4 332.7 Z" fill="#000000" opacity="0.243"/>
+              <path d="M280 200 L235.4 332.7 L207.0 319.4 Z" fill="#000000" opacity="0.290"/>
+              <path d="M280 200 L207.0 319.4 L182.2 300.2 Z" fill="#000000" opacity="0.322"/>
+              <path d="M280 200 L182.2 300.2 L162.4 275.9 Z" fill="#000000" opacity="0.338"/>
+              <path d="M280 200 L162.4 275.9 L148.4 247.8 Z" fill="#000000" opacity="0.337"/>
+              <path d="M280 200 L148.4 247.8 L141.1 217.4 Z" fill="#000000" opacity="0.319"/>
+              <path d="M280 200 L141.1 217.4 L140.7 186.0 Z" fill="#000000" opacity="0.286"/>
+              <path d="M280 200 L140.7 186.0 L147.3 155.4 Z" fill="#000000" opacity="0.237"/>
+              <path d="M280 200 L147.3 155.4 L160.6 127.0 Z" fill="#000000" opacity="0.177"/>
+              <path d="M280 200 L160.6 127.0 L179.8 102.2 Z" fill="#000000" opacity="0.108"/>
+              <path d="M280 200 L179.8 102.2 L204.1 82.4 Z" fill="#000000" opacity="0.034"/>
+              <path d="M280 200 L204.1 82.4 L232.2 68.4 Z" fill="#ffffff" opacity="0.042"/>
+              <path d="M280 200 L232.2 68.4 L262.6 61.1 Z" fill="#ffffff" opacity="0.116"/>
+              <path d="M280 200 L262.6 61.1 L294.0 60.7 Z" fill="#ffffff" opacity="0.185"/>
+              <path d="M280 200 L294.0 60.7 L324.6 67.3 Z" fill="#ffffff" opacity="0.243"/>
+              <path d="M280 200 L324.6 67.3 L353.0 80.6 Z" fill="#ffffff" opacity="0.290"/>
+              <path d="M280 200 L353.0 80.6 L377.8 99.8 Z" fill="#ffffff" opacity="0.322"/>
+              <path d="M280 200 L377.8 99.8 L397.6 124.1 Z" fill="#ffffff" opacity="0.338"/>
+              <path d="M280 200 L397.6 124.1 L411.6 152.2 Z" fill="#ffffff" opacity="0.337"/>
+              <path d="M280 200 L411.6 152.2 L418.9 182.6 Z" fill="#ffffff" opacity="0.319"/>
+              <path d="M280 200 L418.9 182.6 L419.3 214.0 Z" fill="#ffffff" opacity="0.286"/>
+            </g>
+            <path d="M152 290 A128 52 0 0 0 408 290" fill="none" stroke="#1d1d1f" stroke-width="3"/>
+
+            <!-- frustum top -->
+            <ellipse cx="280" cy="200" rx="100" ry="40" fill="url(#frTop)"/>
+            <g clip-path="url(#clipFrTop)">
+              <path d="M280 200 L394.6 235.5 L381.6 263.9 Z" fill="#ffffff" opacity="0.184"/>
+              <path d="M280 200 L381.6 263.9 L361.6 288.0 Z" fill="#ffffff" opacity="0.104"/>
+              <path d="M280 200 L361.6 288.0 L336.0 306.1 Z" fill="#ffffff" opacity="0.017"/>
+              <path d="M280 200 L336.0 306.1 L306.6 317.0 Z" fill="#000000" opacity="0.072"/>
+              <path d="M280 200 L306.6 317.0 L275.4 319.9 Z" fill="#000000" opacity="0.155"/>
+              <path d="M280 200 L275.4 319.9 L244.5 314.6 Z" fill="#000000" opacity="0.228"/>
+              <path d="M280 200 L244.5 314.6 L216.1 301.6 Z" fill="#000000" opacity="0.286"/>
+              <path d="M280 200 L216.1 301.6 L192.0 281.6 Z" fill="#000000" opacity="0.324"/>
+              <path d="M280 200 L192.0 281.6 L173.9 256.0 Z" fill="#000000" opacity="0.340"/>
+              <path d="M280 200 L173.9 256.0 L163.0 226.6 Z" fill="#000000" opacity="0.332"/>
+              <path d="M280 200 L163.0 226.6 L160.1 195.4 Z" fill="#000000" opacity="0.302"/>
+              <path d="M280 200 L160.1 195.4 L165.4 164.5 Z" fill="#000000" opacity="0.252"/>
+              <path d="M280 200 L165.4 164.5 L178.4 136.1 Z" fill="#000000" opacity="0.184"/>
+              <path d="M280 200 L178.4 136.1 L198.4 112.0 Z" fill="#000000" opacity="0.104"/>
+              <path d="M280 200 L198.4 112.0 L224.0 93.9 Z" fill="#000000" opacity="0.017"/>
+              <path d="M280 200 L224.0 93.9 L253.4 83.0 Z" fill="#ffffff" opacity="0.072"/>
+              <path d="M280 200 L253.4 83.0 L284.6 80.1 Z" fill="#ffffff" opacity="0.155"/>
+              <path d="M280 200 L284.6 80.1 L315.5 85.4 Z" fill="#ffffff" opacity="0.228"/>
+              <path d="M280 200 L315.5 85.4 L343.9 98.4 Z" fill="#ffffff" opacity="0.286"/>
+              <path d="M280 200 L343.9 98.4 L368.0 118.4 Z" fill="#ffffff" opacity="0.324"/>
+              <path d="M280 200 L368.0 118.4 L386.1 144.0 Z" fill="#ffffff" opacity="0.340"/>
+              <path d="M280 200 L386.1 144.0 L397.0 173.4 Z" fill="#ffffff" opacity="0.332"/>
+              <path d="M280 200 L397.0 173.4 L399.9 204.6 Z" fill="#ffffff" opacity="0.302"/>
+              <path d="M280 200 L399.9 204.6 L394.6 235.5 Z" fill="#ffffff" opacity="0.252"/>
+            </g>
+
+            <!-- knob + antenna -->
+            <ellipse cx="280" cy="188" rx="26" ry="11" fill="#7d7d82"/>
+            <path d="M254 188 C254 172 266 162 280 162 C294 162 306 172 306 188 Z" fill="url(#knob)"/>
+            <rect x="277" y="118" width="6" height="46" rx="3" fill="#a8a8ad"/>
+            <circle cx="280" cy="112" r="12" fill="url(#knob)"/>
+          </g>
+        </svg>
+      </div>
+    </section>
+  </main>
+
 </body>
 </html>
