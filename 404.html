@@ -88,17 +88,25 @@
 
     .copy { position: relative; z-index: 2; max-width: 560px; }
     .copy h1 {
-      margin: 0 0 22px;
-      font-size: clamp(38px, 5vw, 56px);
-      line-height: 1.05;
+      margin: 0;
+      font-size: clamp(64px, min(14vw, 20vh), 168px);
+      line-height: .9;
       font-weight: 800;
-      letter-spacing: -0.03em;
+      letter-spacing: -0.04em;
+    }
+    .copy h2 {
+      margin: 10px 0 16px;
+      font-size: clamp(26px, min(4vw, 5.5vh), 44px);
+      line-height: 1.1;
+      font-weight: 800;
+      letter-spacing: -0.025em;
     }
     .copy p {
-      margin: 0 0 30px;
-      font-size: 20px;
+      margin: 0 0 clamp(18px, 3vh, 28px);
+      font-size: clamp(15px, 2.3vh, 19px);
       line-height: 1.5;
       color: var(--muted);
+      max-width: 34em;
     }
     .actions { display: flex; flex-wrap: wrap; gap: 14px; }
 
@@ -149,10 +157,10 @@
       <div class="copy">
         <h1>404</h1>
         <h2>This page<br>was abducted.</h2>
-        <p>Page not Found. May you have an typo? If you want to deploy a Website click here!</p>
+        <p>Page not Found. May you have an typo? If you want to deploy a Website click the button below!</p>
         <div class="actions">
           <a class="btn btn-dark" href="#">Home</a>
-          <a class="btn btn-light" href="#">Get support</a>
+          <a class="btn btn-light" href="https://docs.github.com/de/pages">Get help</a>
         </div>
       </div>
 
