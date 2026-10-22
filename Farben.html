@@ -165,6 +165,38 @@ input:focus-visible,select:focus-visible,.copy:focus-visible{
   border-radius:var(--radius-l);
 }
 
+/* ===== Neue Farbe hinzufügen ===== */
+.addform{
+  margin-bottom:var(--space-4);
+  padding:var(--space-3);
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius-l);
+}
+.addform h2{margin:0 0 var(--space-2);font-size:1rem}
+.fields{display:flex;flex-wrap:wrap;gap:var(--space-2);align-items:center}
+.fields input{flex:1;min-width:140px}
+.hexpick{display:flex;gap:var(--space-2);align-items:center}
+.hexpick input[type=color]{
+  flex:none;min-width:0;width:46px;height:42px;padding:3px;cursor:pointer;
+}
+.hexpick input[type=text]{width:110px;min-width:0;flex:none;font-family:var(--mono)}
+.save{
+  padding:var(--space-2) var(--space-3);
+  background:var(--accent);
+  color:var(--bg);
+  border:0;
+  border-radius:var(--radius-m);
+  font:inherit;
+  font-weight:700;
+  cursor:pointer;
+}
+.save:disabled{opacity:.5;cursor:wait}
+.save:focus-visible{outline:2px solid var(--text);outline-offset:2px}
+.addform .status{margin:var(--space-2) 0 0}
+.status.error{color:#ff8a8a}
+.status.ok{color:var(--accent)}
+
 @media (max-width:480px){
   .hexrow{flex-direction:column;align-items:stretch}
 }
@@ -179,6 +211,21 @@ input:focus-visible,select:focus-visible,.copy:focus-visible{
     </div>
     <div id="count" class="count">Lade …</div>
   </header>
+
+  <form id="addForm" class="addform" autocomplete="off">
+    <h2>Neue Farbe hinzufügen</h2>
+    <div class="fields">
+      <input id="newColor" placeholder="Farbname (z. B. Signalrot)" maxlength="60" required aria-label="Farbname">
+      <input id="newMaterial" list="materials" placeholder="Material (z. B. PLA)" maxlength="30" aria-label="Material">
+      <datalist id="materials"></datalist>
+      <div class="hexpick">
+        <input id="newPicker" type="color" value="#77e0a2" aria-label="Farbe wählen">
+        <input id="newHex" type="text" value="#77E0A2" maxlength="7" aria-label="HEX-Wert">
+      </div>
+      <button id="saveBtn" class="save" type="submit">Speichern</button>
+    </div>
+    <p id="addMsg" class="status" aria-live="polite"></p>
+  </form>
 
   <div class="toolbar">
     <input id="search" type="search" placeholder="Farbe, Material oder HEX suchen …" aria-label="Filamente suchen">
@@ -277,6 +324,7 @@ function updateMaterialFilter(){
   select.replaceChildren(new Option("Alle Materialien", ""));
   materials.forEach(material => select.add(new Option(material, material)));
   if(materials.includes(current)) select.value = current;
+  $("materials").replaceChildren(...materials.map(m => new Option(m)));
 }
 
 async function load(){
@@ -314,6 +362,58 @@ async function load(){
     return false;
   }
 }
+
+/* ===== Neue Farbe speichern ===== */
+function addMessage(text, type){
+  const el = $("addMsg");
+  el.textContent = text;
+  el.className = "status" + (type ? " " + type : "");
+}
+
+$("newPicker").addEventListener("input", () => {
+  $("newHex").value = $("newPicker").value.toUpperCase();
+});
+$("newHex").addEventListener("input", () => {
+  const v = $("newHex").value.trim();
+  if(/^#[0-9a-f]{6}$/i.test(v)) $("newPicker").value = v;
+});
+
+$("addForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  const color = $("newColor").value.trim();
+  const material = $("newMaterial").value.trim();
+  let hex = $("newHex").value.trim().toUpperCase();
+  if(hex && !hex.startsWith("#")) hex = "#" + hex;
+
+  if(!color) return addMessage("Bitte einen Farbnamen eingeben.", "error");
+  if(!validHex(hex)) return addMessage("Der HEX-Wert ist ungültig (z. B. #FF8800).", "error");
+  if(filaments.some(f => f.color.toLowerCase() === color.toLowerCase() && f.material === material)){
+    return addMessage("Diese Farbe gibt es mit diesem Material schon.", "error");
+  }
+  const base = DATABASE_URL.trim().replace(/\/+$/, "");
+  if(!/^https:\/\/.+/.test(base)) return addMessage("DATABASE_URL fehlt im Code.", "error");
+
+  $("saveBtn").disabled = true;
+  addMessage("Speichere …");
+  try{
+    const res = await fetch(`${base}/${PFAD}.json`, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({color, material, hex})
+    });
+    if(res.status === 401 || res.status === 403){
+      throw new Error("Schreiben nicht erlaubt. In den Firebase-Regeln muss Schreiben für „" + PFAD + "“ erlaubt sein.");
+    }
+    if(!res.ok) throw new Error("Serverantwort " + res.status);
+    $("newColor").value = "";
+    addMessage("„" + color + "“ wurde gespeichert.", "ok");
+    await load();
+  }catch(error){
+    addMessage("Fehler beim Speichern: " + error.message, "error");
+  }finally{
+    $("saveBtn").disabled = false;
+  }
+});
 
 $("search").addEventListener("input", render);
 $("materialFilter").addEventListener("change", render);
