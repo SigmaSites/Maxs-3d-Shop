@@ -3,99 +3,191 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>eSUN Filament-Katalog</title>
+<title>Meine Farben</title>
 <style>
 :root{color-scheme:light dark;--bg:#f2f4f3;--surface:#fff;--text:#1d2a27;--muted:#5c6b67;--line:#d5dcda;--accent:#0f7b6c;--accent-text:#fff}
 @media(prefers-color-scheme:dark){:root{--bg:#151b1a;--surface:#1e2725;--text:#e6eeec;--muted:#9bada8;--line:#33413e;--accent:#3fc0ab;--accent-text:#0b1513}}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:"Segoe UI",system-ui,sans-serif;line-height:1.5}
-main{max-width:900px;margin:0 auto;padding:16px}.top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
-h1{font-size:1.6rem;margin:0}p.sub{margin:0 0 14px;color:var(--muted)}
-input,select,button,a.btn{font:inherit;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 12px;cursor:pointer}
-a.btn{display:inline-block;background:var(--accent);color:var(--accent-text);border-color:var(--accent);text-decoration:none;font-weight:600}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.nav{display:flex;gap:8px;margin:14px 0;flex-wrap:wrap}
-.nav button[aria-pressed=true],.row button[aria-pressed=true]{background:var(--accent);color:var(--accent-text);border-color:var(--accent)}
-.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.bar input{flex:1;min-width:160px}
-.row{display:flex;align-items:center;gap:12px;padding:10px 12px;margin-bottom:8px;background:var(--surface);border:1px solid var(--line);border-radius:10px}
-.dot{flex:none;width:36px;height:36px;border-radius:50%;border:1px solid rgba(128,128,128,.5)}.t{flex:1;min-width:0}.t b{display:block}.t span{font-size:.85rem;color:var(--muted)}
-.front{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}.fc{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center}
-.fc svg{width:110px;height:110px}.fc b{display:block;margin-top:6px}.fc div{font-size:.88rem;color:var(--muted)}
-.none{padding:16px;color:var(--muted);border:1px dashed var(--line);border-radius:10px;text-align:center}.foot{margin-top:16px;font-size:.8rem;color:var(--muted)}
-[hidden]{display:none!important}
+main{max-width:1000px;margin:0 auto;padding:16px}.top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+h1{font-size:1.6rem;margin:0}.sub{color:var(--muted);margin:4px 0 14px}
+input,select,button{font:inherit;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+button{cursor:pointer}.nav,.bar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.nav button[aria-pressed=true],.color-card button[aria-pressed=true]{background:var(--accent);color:var(--accent-text);border-color:var(--accent)}
+.bar input{flex:1;min-width:160px}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px}
+.color-card{overflow:hidden;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.swatch{height:110px;border-bottom:1px solid var(--line)}
+.info{padding:10px}.info b{display:block;overflow-wrap:anywhere}.info small{display:block;color:var(--muted);overflow-wrap:anywhere;margin:3px 0 8px}
+.info button{width:100%}.front{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
+.front-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+.front-swatch{height:100px;border-radius:8px;border:1px solid var(--line)}.front-card b{display:block;margin:8px 0;overflow-wrap:anywhere}
+.none{padding:16px;color:var(--muted);border:1px dashed var(--line);border-radius:10px;text-align:center}.status{font-size:.85rem;color:var(--muted)}[hidden]{display:none!important}
 </style>
 </head>
 <body>
 <main>
-  <div class="top"><h1>eSUN Filament-Katalog</h1><span id="count" class="sub"></span></div>
-  <div class="nav" aria-label="Seiten">
-    <button id="catalogTab" aria-pressed="true">Katalog</button>
-    <button id="frontTab" aria-pressed="false">Vorne anzeigen</button>
+  <div class="top"><h1>Meine Farben</h1><span id="count" class="status"></span></div>
+  <p class="sub">Filamente werden live aus deiner Firebase Realtime Database geladen.</p>
+  <div class="nav" aria-label="Ansicht">
+    <button id="catalogTab" aria-pressed="true">Alle Farben</button>
+    <button id="frontTab" aria-pressed="false">Ausgewählte Farben</button>
   </div>
   <section id="catalogView">
-    <p class="sub">eSUN-Filamente. Tippe auf „Auswählen“, dann erscheinen sie unter „Vorne anzeigen“.</p>
-    <div class="bar"><input type="search" id="q" placeholder="Suche nach..." aria-label="Suche"><select id="serie" aria-label="Serie"><option value="">Alle Serien</option></select></div>
-    <div id="list"></div>
-    <p class="foot">Sortiment: eSUN, 1,75 mm / 1 kg.</p>
+    <div class="bar">
+      <input type="search" id="q" placeholder="Farbe suchen …" aria-label="Farbe suchen">
+      <select id="sort" aria-label="Sortierung">
+        <option value="name">Nach Name sortieren</option>
+        <option value="color">Nach Farbwert sortieren</option>
+      </select>
+    </div>
+    <div id="status" class="status">Verbindung wird hergestellt …</div>
+    <div id="list" class="grid"></div>
   </section>
   <section id="frontView" hidden>
-    <p class="sub">Deine ausgewählten Filamente.</p>
-    <div class="front" id="front"></div>
+    <p class="sub">Hier erscheinen die Farben, die du ausgewählt hast.</p>
+    <div id="front" class="front"></div>
   </section>
 </main>
-<script>
-const HEX = {"Black":"#1a1a1a","Deep Black":"#101010","White":"#f5f5f5","Cold White":"#eef3f8","Bone White":"#ece6d3","Milky White":"#f4f1ea","Milk White":"#f4f1ea","Grey":"#7b8794","Dark Grey":"#3d4247","Light Grey":"#c8ccd0","Concrete Grey":"#8d9096","Silver":"#c0c4c8","Red":"#d62828","Fire Engine Red":"#c8102e","RGB Red":"#ff0000","Strawberry Red":"#d94a4a","Orange":"#f08c00","Coral Orange":"#ff7f50","Apricot":"#fbb36a","Tangerine":"#f28c28","Yellow":"#f5d90a","Almond Yellow":"#f3e0a0","Gold":"#d4af37","Bronze":"#a97142","Beige":"#d9c3a0","Light Beige":"#e6d8c0","Light Khaki":"#c9bd8f","Mustard Green":"#a8a43c","Brown":"#6b4226","Light Brown":"#a9744f","Pink":"#f48fb1","Baby Pink":"#f8c8d8","Peach Pink":"#f9b7a8","Magenta":"#d6249f","Purple":"#7e3ff2","Grape Purple":"#6a2c91","Lilac":"#c8a2e0","Morandi Purple":"#9a8aa5","Dark Blue":"#1a2f7a","Blue":"#1d4ed8","Light Blue":"#6bb7e8","Baby Blue":"#a9d4f0","Haze Blue":"#7d9fc0","Space Blue":"#2a3a5c","Lake Blue":"#3b82a0","RGB Blue":"#0000ff","Aqua":"#4fd1c5","Mint Green":"#98e0b8","Grass Green":"#5aa832","Matcha Green":"#9bb86b","Morandi Green":"#8ea58f","Holly Green":"#1f6b46","Jade Green":"#2e9a78","Olive Green":"#6b7a2a","Pine Green":"#1f5a3c","Peak Green":"#3fa34d","Green":"#2f9e44","RGB Green":"#00c000","Lime":"#b7e02b"};
-const SERIEN = {
-  "PLA+": ["Black","White","Cold White","Bone White","Milky White","Grey","Silver","Red","Fire Engine Red","RGB Red","Orange","Coral Orange","Apricot","Yellow","Almond Yellow","Gold","Beige","Light Beige","Light Khaki","Mustard Green","Brown","Light Brown","Pink","Baby Pink","Peach Pink","Magenta","Purple","Lilac","Dark Blue","Blue","Light Blue","Baby Blue","Haze Blue","Space Blue","RGB Blue","Aqua","Mint Green","Grass Green","Matcha Green","Holly Green","Jade Green","Olive Green","Pine Green","Peak Green","Green","RGB Green"],
-  "PLA Basic": ["Black","White","Cold White","Bone White","Grey","Light Grey","Concrete Grey","Silver","Fire Engine Red","RGB Red","Orange","Yellow","Beige","Pink","Purple","Grape Purple","Blue","Light Blue","Aqua","Green"],
-  "PLA-Silk": ["Gold","Silver","Bronze","Lime"],
-  "PLA-Matte": ["Deep Black","Dark Grey","Milk White","Almond Yellow","Tangerine","Strawberry Red","Fire Engine Red","Lilac","Morandi Purple","Dark Blue","Lake Blue","Matcha Green","Morandi Green","Olive Green"]
-};;
-const KATALOG=[];
-for(const [serie,farben] of Object.entries(SERIEN)) farben.forEach(f=>KATALOG.push({name:"eSUN "+serie+" "+f,serie,farbe:f,hex:HEX[f]||"#999999"}));
-const $=id=>document.getElementById(id);
-const STORAGE_KEY="esun_filamente_v1";
-let sel=new Set();
-try{sel=new Set(JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]"));}catch(e){}
-function save(){
-  try{localStorage.setItem(STORAGE_KEY,JSON.stringify([...sel]));}catch(e){}
-  $("count").textContent=sel.size?sel.size+" ausgewählt":"";
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+
+/* Ersetze die Beispielwerte durch die Konfiguration aus Firebase:
+   Firebase Console → Projekteinstellungen → Deine Apps → SDK-Einrichtung */
+const firebaseConfig = {
+  apiKey: "DEIN_API_KEY",
+  authDomain: "DEIN_PROJEKT.firebaseapp.com",
+  databaseURL: "DEINE_DATABASE_URL",
+  projectId: "DEIN_PROJEKT",
+  appId: "DEINE_APP_ID"
+};
+
+const $ = id => document.getElementById(id);
+const STORAGE_KEY = "firebase_farben_auswahl_v1";
+let farben = [];
+let selected = new Set();
+try { selected = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]")); } catch {}
+
+function isHex(value) {
+  return typeof value === "string" && /^#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(value.trim());
 }
-function renderCatalog(){
- const words=$("q").value.toLowerCase().split(/\s+/).filter(Boolean);
- const hits=KATALOG.filter(k=>(!$("serie").value||k.serie===$("serie").value)&&words.every(w=>k.name.toLowerCase().includes(w)));
- const list=$("list");list.innerHTML=hits.length?"":'<div class="none">Nichts gefunden. Ändere die Suche.</div>';
- hits.forEach(k=>{
-  const on=sel.has(k.name),r=document.createElement("div");r.className="row";
-  r.innerHTML='<span class="dot"></span><div class="t"><b></b><span></span></div><button></button>';
-  r.querySelector(".dot").style.background=k.hex;r.querySelector("b").textContent=k.name;
-  r.querySelector(".t span").textContent=k.serie+" · "+k.farbe;
-  const b=r.querySelector("button");b.textContent=on?"Ausgewählt":"Auswählen";b.setAttribute("aria-pressed",on);
-  b.onclick=()=>{on?sel.delete(k.name):sel.add(k.name);save();renderCatalog();renderFront();};
-  list.appendChild(r);
- });
+
+/* Erwartete Datenstruktur:
+   filaments/0/color = "Schwarz"
+   filaments/0/hex = "#000000"
+   filaments/0/material = "PLA" */
+function parseColors(data) {
+  if (!data || typeof data !== "object") return [];
+  return Object.entries(data).map(([key, value]) => {
+    if (!value || typeof value !== "object") return null;
+    const name = typeof value.color === "string" ? value.color : key;
+    const hex = typeof value.hex === "string" ? value.hex.trim() : "";
+    const material = typeof value.material === "string" ? value.material : "";
+    if (!isHex(hex)) return null;
+    return { id:key, name, hex:hex.toLowerCase(), material };
+  }).filter(Boolean).sort((a,b) => a.name.localeCompare(b.name, "de"));
 }
-function renderFront(){
- const front=$("front");front.innerHTML="";
- const items=KATALOG.filter(k=>sel.has(k.name));
- if(!items.length){front.innerHTML='<div class="none">Noch nichts ausgewählt. Wähle Filamente im Katalog aus.</div>';return;}
- items.forEach(it=>{
-  const c=document.createElement("div");c.className="fc";
-  c.innerHTML='<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" stroke="rgba(128,128,128,.5)"/><circle cx="60" cy="60" r="38" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="6"/><circle cx="60" cy="60" r="18" fill="var(--surface)" stroke="rgba(128,128,128,.5)"/></svg><b></b><div>1,75 mm · 1 kg</div><button class="remove">Entfernen</button>';
-  c.querySelector("circle").setAttribute("fill",/^#[0-9a-fA-F]{3,8}$/.test(it.hex)?it.hex:"#999999");
-  c.querySelector("b").textContent=it.name;
-  c.querySelector(".remove").onclick=()=>{sel.delete(it.name);save();renderCatalog();renderFront();};
-  front.appendChild(c);
- });
+function saveSelection() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...selected])); } catch {}
+  $("count").textContent = selected.size ? `${selected.size} ausgewählt` : `${farben.length} Farben`;
 }
-function show(view){
- const catalog=view==="catalog";
- $("catalogView").hidden=!catalog;$("frontView").hidden=catalog;
- $("catalogTab").setAttribute("aria-pressed",catalog);$("frontTab").setAttribute("aria-pressed",!catalog);
- if(!catalog)renderFront();
+
+function renderList() {
+  const words = $("q").value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+  let items = farben.filter(c => words.every(w => `${c.name} ${c.hex} ${c.material}`.toLowerCase().includes(w)));
+  if ($("sort").value === "color") items.sort((a,b) => a.hex.localeCompare(b.hex));
+  const list = $("list");
+  list.replaceChildren();
+  if (!items.length) {
+    list.innerHTML = '<div class="none">Keine passenden Farben gefunden. Prüfe auch die Datenstruktur in Firebase.</div>';
+    return;
+  }
+  items.forEach(c => {
+    const card = document.createElement("article");
+    card.className = "color-card";
+    const swatch = document.createElement("div");
+    swatch.className = "swatch";
+    swatch.style.backgroundColor = c.hex;
+    const info = document.createElement("div");
+    info.className = "info";
+    const title = document.createElement("b");
+    title.textContent = c.name;
+    const value = document.createElement("small");
+    value.textContent = c.material ? `${c.hex} · ${c.material}` : c.hex;
+    const button = document.createElement("button");
+    const isSelected = selected.has(c.id);
+    button.textContent = isSelected ? "Ausgewählt" : "Auswählen";
+    button.setAttribute("aria-pressed", String(isSelected));
+    button.onclick = () => {
+      selected.has(c.id) ? selected.delete(c.id) : selected.add(c.id);
+      saveSelection(); renderList(); renderFront();
+    };
+    info.append(title, value, button);
+    card.append(swatch, info);
+    list.append(card);
+  });
 }
-$("catalogTab").onclick=()=>show("catalog");$("frontTab").onclick=()=>show("front");
-Object.keys(SERIEN).forEach(s=>{const o=document.createElement("option");o.value=s;o.textContent=s;$("serie").appendChild(o);});
-$("q").oninput=renderCatalog;$("serie").onchange=renderCatalog;
-renderCatalog();renderFront();save();
+
+function renderFront() {
+  const front = $("front");
+  front.replaceChildren();
+  const items = farben.filter(c => selected.has(c.id));
+  if (!items.length) {
+    front.innerHTML = '<div class="none">Noch keine Farben ausgewählt.</div>';
+    return;
+  }
+  items.forEach(c => {
+    const card = document.createElement("article");
+    card.className = "front-card";
+    const swatch = document.createElement("div");
+    swatch.className = "front-swatch";
+    swatch.style.backgroundColor = c.hex;
+    const title = document.createElement("b");
+    title.textContent = c.name;
+    const value = document.createElement("small");
+    value.className = "status";
+    value.textContent = c.material ? `${c.hex} · ${c.material}` : c.hex;
+    const button = document.createElement("button");
+    button.textContent = "Entfernen";
+    button.onclick = () => {
+      selected.delete(c.id); saveSelection(); renderList(); renderFront();
+    };
+    card.append(swatch, title, value, button);
+    front.append(card);
+  });
+}
+
+function show(view) {
+  const catalog = view === "catalog";
+  $("catalogView").hidden = !catalog;
+  $("frontView").hidden = catalog;
+  $("catalogTab").setAttribute("aria-pressed", String(catalog));
+  $("frontTab").setAttribute("aria-pressed", String(!catalog));
+  if (!catalog) renderFront();
+}
+
+$("catalogTab").onclick = () => show("catalog");
+$("frontTab").onclick = () => show("front");
+$("q").oninput = renderList;
+$("sort").onchange = renderList;
+
+try {
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  onValue(ref(db, "filaments"), snapshot => {
+    farben = parseColors(snapshot.val());
+    $("status").textContent = farben.length
+      ? `${farben.length} Farben erfolgreich geladen.`
+      : "Keine lesbaren Filamente gefunden. Prüfe den Ordner „filaments“ und die Datenbankregeln.";
+    const validIds = new Set(farben.map(c => c.id));
+    selected = new Set([...selected].filter(id => validIds.has(id)));
+    saveSelection(); renderList(); renderFront();
+  }, error => {
+    $("status").textContent = "Firebase-Fehler: " + error.message;
+  });
+} catch (error) {
+  $("status").textContent = "Konfiguration prüfen: Trage deine Firebase-Projektdaten im Code ein. " + error.message;
+}
 </script>
 </body>
 </html>
