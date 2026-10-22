@@ -5,60 +5,169 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Filament-Farben</title>
 <style>
+/* ===== Design-Variablen: hier änderst du das ganze Aussehen ===== */
 :root{
   color-scheme:dark;
+
+  /* Farben */
   --bg:#101311;
   --surface:#191e1b;
-  --surface-hover:#222a25;
+  --surface-2:#222a25;
   --text:#edf3ef;
   --muted:#9aa79f;
-  --line:#303a33;
+  --line:#2c352f;
   --accent:#77e0a2;
+  --accent-soft:#1f3328;
+  --accent-text:#bdebc9;
+
+  /* Form */
+  --radius-s:8px;
+  --radius-m:12px;
+  --radius-l:16px;
+  --shadow:0 6px 20px rgb(0 0 0 / .25);
+
+  /* Abstände */
+  --space-1:6px;
+  --space-2:10px;
+  --space-3:16px;
+  --space-4:24px;
+  --page-width:1100px;
+
+  /* Schrift */
+  --font:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Consolas,monospace;
+
+  /* Karten */
+  --card-min:210px;
+  --swatch-height:140px;
 }
+
+@media (max-width:480px){
+  :root{
+    --space-3:12px;
+    --space-4:18px;
+    --card-min:140px;
+    --swatch-height:100px;
+  }
+}
+
+/* ===== Grundlayout ===== */
 *{box-sizing:border-box}
 body{
   margin:0;
-  background:radial-gradient(ellipse at top,#1b2920 0%,var(--bg) 55%);
+  background:var(--bg);
   color:var(--text);
-  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-family:var(--font);
   line-height:1.5;
 }
-main{max-width:1100px;margin:0 auto;padding:28px 18px 48px}
-header{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:22px}
-h1{font-size:clamp(1.7rem,4vw,2.4rem);letter-spacing:-.04em;margin:0}
-.subtitle{color:var(--muted);margin:5px 0 0}
-.count{font-size:.9rem;color:var(--muted);border:1px solid var(--line);background:#171d19;padding:7px 11px;border-radius:999px}
-.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+main{
+  max-width:var(--page-width);
+  margin:0 auto;
+  padding:var(--space-4) var(--space-3) calc(var(--space-4) * 2);
+}
+[hidden]{display:none!important}
+
+/* ===== Kopfbereich ===== */
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  flex-wrap:wrap;
+  gap:var(--space-3);
+  margin-bottom:var(--space-4);
+}
+h1{margin:0;font-size:clamp(1.6rem,4vw,2.2rem);letter-spacing:-.03em}
+.subtitle{margin:var(--space-1) 0 0;color:var(--muted)}
+.count{
+  padding:var(--space-1) var(--space-2);
+  border:1px solid var(--line);
+  border-radius:999px;
+  color:var(--muted);
+  font-size:.875rem;
+}
+
+/* ===== Suche und Filter ===== */
+.toolbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:var(--space-2);
+  margin-bottom:var(--space-3);
+}
 input,select{
-  font:inherit;color:var(--text);background:var(--surface);
-  border:1px solid var(--line);border-radius:11px;padding:11px 13px;
+  padding:var(--space-2) var(--space-3);
+  background:var(--surface);
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:var(--radius-m);
+  font:inherit;
 }
 input{flex:1;min-width:190px}
 select{min-width:160px}
-input:focus,select:focus{outline:2px solid var(--accent);outline-offset:2px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:15px}
+input:focus-visible,select:focus-visible,.copy:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+}
+.status{margin:0 0 var(--space-3);color:var(--muted);font-size:.875rem}
+
+/* ===== Karten ===== */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(var(--card-min),1fr));
+  gap:var(--space-3);
+}
 .card{
-  overflow:hidden;background:linear-gradient(145deg,#202722,#171c19);
-  border:1px solid var(--line);border-radius:17px;
-  box-shadow:0 8px 26px #0002;transition:transform .16s,border-color .16s;
+  overflow:hidden;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius-l);
+  box-shadow:var(--shadow);
+  transition:transform .15s,border-color .15s;
 }
-.card:hover{transform:translateY(-3px);border-color:#52675a}
-.swatch{height:145px;position:relative;border-bottom:1px solid #ffffff18}
-.swatch::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,#ffffff1c,transparent 50%,#00000018)}
-.details{padding:14px 15px 16px}
-.name{font-size:1.08rem;font-weight:700;overflow-wrap:anywhere}
-.material{display:inline-block;margin-top:7px;padding:4px 9px;border-radius:7px;background:#2a352e;color:#bdebc9;font-size:.78rem;font-weight:650}
-.hexrow{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:13px}
-.hex{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:#c3cec6;font-size:.9rem}
+.card:hover{transform:translateY(-2px);border-color:var(--accent)}
+.swatch{height:var(--swatch-height);border-bottom:1px solid var(--line)}
+.details{padding:var(--space-3)}
+.name{font-weight:700;overflow-wrap:anywhere}
+.material{
+  display:inline-block;
+  margin-top:var(--space-1);
+  padding:2px var(--space-2);
+  background:var(--accent-soft);
+  color:var(--accent-text);
+  border-radius:var(--radius-s);
+  font-size:.75rem;
+  font-weight:600;
+}
+.hexrow{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:var(--space-2);
+  margin-top:var(--space-3);
+}
+.hex{font-family:var(--mono);font-size:.875rem;color:var(--muted)}
 .copy{
-  border:1px solid #3a493e;background:#26342a;color:#d9f7e2;
-  border-radius:8px;padding:6px 9px;font:inherit;font-size:.8rem;cursor:pointer
+  padding:var(--space-1) var(--space-2);
+  background:var(--surface-2);
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:var(--radius-s);
+  font:inherit;
+  font-size:.8rem;
+  cursor:pointer;
 }
-.copy:hover{background:#314735}
-.status{color:var(--muted);font-size:.9rem;margin:12px 0}
-.empty{padding:24px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:14px}
-[hidden]{display:none!important}
-@media(max-width:480px){main{padding:20px 12px 32px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.swatch{height:105px}.details{padding:11px}.name{font-size:.98rem}.hexrow{align-items:flex-start;flex-direction:column}.copy{width:100%}}
+.copy:hover{border-color:var(--accent)}
+.empty{
+  grid-column:1/-1;
+  padding:var(--space-4);
+  text-align:center;
+  color:var(--muted);
+  border:1px dashed var(--line);
+  border-radius:var(--radius-l);
+}
+
+@media (max-width:480px){
+  .hexrow{flex-direction:column;align-items:stretch}
+}
 </style>
 </head>
 <body>
