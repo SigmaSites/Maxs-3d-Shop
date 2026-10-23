@@ -62,7 +62,8 @@
     .filament-list { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
     .filament-item { display: flex; align-items: center; justify-content: space-between; background: var(--surface2); border-radius: 8px; padding: 0.6rem 0.9rem; }
     .fil-info { display: flex; align-items: center; gap: 0.75rem; }
-    .fil-dot { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); flex-shrink: 0; }
+    .fil-dot { width: 18px; height: 18px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); flex-shrink: 0; overflow: hidden; }
+    .fil-dot.dual { background: linear-gradient(135deg, var(--c1) 50%, var(--c2) 50%); }
     .fil-name { font-size: 0.9rem; }
     .fil-mat { font-size: 0.75rem; color: var(--muted); margin-left: 0.2rem; }
     .fil-add-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
@@ -184,11 +185,20 @@
         <div class="fil-empty">Noch keine Filamente eingetragen.</div>
       </div>
       <div class="fil-add-row">
-        <input type="color" id="filColor" value="#ffffff" title="Farbe" />
-        <input type="text" id="filColorName" placeholder="Farbe (z.B. Schwarz)" />
+        <div style="display:flex;flex-direction:column;gap:0.2rem;align-items:center">
+          <input type="color" id="filColor" value="#ffffff" title="Farbe 1" />
+          <span style="font-size:0.65rem;color:var(--muted)">Farbe 1</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.2rem;align-items:center">
+          <input type="color" id="filColor2" value="#ffffff" title="Farbe 2 (optional)" />
+          <span style="font-size:0.65rem;color:var(--muted)">Farbe 2</span>
+        </div>
+        <input type="checkbox" id="filDual" style="display:none" />
+        <input type="text" id="filColorName" placeholder="Farbe (z.B. Schwarz/Weiß)" />
         <input type="text" id="filMaterial" placeholder="Material (z.B. PLA)" />
         <button class="btn btn-accent btn-sm" onclick="addFilament()">＋ Hinzufügen</button>
       </div>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:0.5rem">💡 Für Dualfarben beide Farben wählen und z.B. „Schwarz/Weiß" als Namen eintragen.</p>
     </div>
 
     <!-- ADD ARTICLE -->
@@ -265,7 +275,7 @@
 </div>
 
 <script>
-const ADMIN_PASSWORD = "Zl!wHgy4o@au26";
+const ADMIN_PASSWORD = ""Z1!wHgy4o@au26";";
 const FIREBASE_URL   = "https://dshop-23436-default-rtdb.europe-west1.firebasedatabase.app/";
 
 let items = [], filaments = [];
@@ -314,7 +324,7 @@ function renderFilaments() {
   list.innerHTML = filaments.map((f, i) => `
     <div class="filament-item">
       <div class="fil-info">
-        <div class="fil-dot" style="background:${escHtml(f.hex||'#888')}"></div>
+        <div class="fil-dot ${f.hex2 ? 'dual' : ''}" style="${f.hex2 ? `--c1:${f.hex||'#888'};--c2:${f.hex2}` : `background:${f.hex||'#888'}`}"></div>
         <span class="fil-name">${escHtml(f.color)}</span>
         <span class="fil-mat">– ${escHtml(f.material)}</span>
       </div>
@@ -326,8 +336,11 @@ function addFilament() {
   const color = document.getElementById('filColorName').value.trim();
   const material = document.getElementById('filMaterial').value.trim();
   const hex = document.getElementById('filColor').value;
+  const hex2raw = document.getElementById('filColor2').value;
+  // Only store hex2 if it differs from hex1 (user actually picked a second color)
+  const hex2 = hex2raw !== hex ? hex2raw : null;
   if (!color || !material) { toast('Farbe und Material angeben.', 'error'); return; }
-  filaments.push({ color, material, hex });
+  filaments.push({ color, material, hex, ...(hex2 ? { hex2 } : {}) });
   saveFilaments();
   document.getElementById('filColorName').value = '';
   document.getElementById('filMaterial').value = '';
