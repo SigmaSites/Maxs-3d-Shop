@@ -62,8 +62,11 @@
     .filament-list { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
     .filament-item { display: flex; align-items: center; justify-content: space-between; background: var(--surface2); border-radius: 8px; padding: 0.6rem 0.9rem; }
     .fil-info { display: flex; align-items: center; gap: 0.75rem; }
-    .fil-dot { width: 18px; height: 18px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); flex-shrink: 0; overflow: hidden; }
-    .fil-dot.dual { background: linear-gradient(135deg, var(--c1) 50%, var(--c2) 50%); }
+    .fil-dot { width: 18px; height: 18px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); flex-shrink: 0; overflow: hidden; position: relative; }
+    .fil-dot.dual { background: none; }
+    .fil-dot.dual::before, .fil-dot.dual::after { content: ''; position: absolute; top: 0; width: 50%; height: 100%; }
+    .fil-dot.dual::before { left: 0; background: var(--c1); border-radius: 50% 0 0 50%; }
+    .fil-dot.dual::after  { right: 0; background: var(--c2); border-radius: 0 50% 50% 0; }
     .fil-name { font-size: 0.9rem; }
     .fil-mat { font-size: 0.75rem; color: var(--muted); margin-left: 0.2rem; }
     .fil-add-row { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
@@ -275,8 +278,8 @@
 </div>
 
 <script>
-const ADMIN_PASSWORD = "Z1!wHgy4o@au26";
-const FIREBASE_URL   = "https://dshop-23436-default-rtdb.europe-west1.firebasedatabase.app/";
+const ADMIN_PASSWORD = "a2?wHgy4s@wr50";
+const FIREBASE_URL   = "https://dshop-23436-default-rtdb.europe-west1.firebasedatabase.app";
 
 let items = [], filaments = [];
 let currentFilter = 'all';
