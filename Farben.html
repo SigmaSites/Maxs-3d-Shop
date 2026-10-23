@@ -40,6 +40,7 @@
   /* Karten */
   --card-min:210px;
   --swatch-height:140px;
+  --dual-angle:135deg; /* Richtung der Teilung bei Dualfarben */
 }
 
 @media (max-width:480px){
@@ -165,6 +166,14 @@ input:focus-visible,select:focus-visible,.copy:focus-visible{
   border-radius:var(--radius-l);
 }
 
+/* ===== Dualfarben ===== */
+.tags{display:flex;flex-wrap:wrap;gap:var(--space-1);margin-top:var(--space-1)}
+.tags .material{margin-top:0}
+.material.dual-tag{background:transparent;border:1px solid var(--accent);color:var(--accent)}
+.hexlabel{display:flex;align-items:center;gap:var(--space-1);min-width:0}
+.chip{flex:none;width:14px;height:14px;border-radius:50%;border:1px solid var(--line)}
+.hexrow + .hexrow{margin-top:var(--space-2)}
+
 /* ===== Neue Farbe hinzufügen ===== */
 .addform{
   margin-bottom:var(--space-4);
@@ -181,6 +190,8 @@ input:focus-visible,select:focus-visible,.copy:focus-visible{
   flex:none;min-width:0;width:46px;height:42px;padding:3px;cursor:pointer;
 }
 .hexpick input[type=text]{width:110px;min-width:0;flex:none;font-family:var(--mono)}
+.check{display:flex;align-items:center;gap:var(--space-1);color:var(--muted);font-size:.9rem;cursor:pointer}
+.check input{flex:none;min-width:0;width:auto;accent-color:var(--accent)}
 .save{
   padding:var(--space-2) var(--space-3);
   background:var(--accent);
@@ -222,6 +233,11 @@ input:focus-visible,select:focus-visible,.copy:focus-visible{
         <input id="newPicker" type="color" value="#77e0a2" aria-label="Farbe wählen">
         <input id="newHex" type="text" value="#77E0A2" maxlength="7" aria-label="HEX-Wert">
       </div>
+      <label class="check"><input id="newDual" type="checkbox"> Zweifarbig</label>
+      <div id="dualPick" class="hexpick" hidden>
+        <input id="newPicker2" type="color" value="#4aa3ff" aria-label="Zweite Farbe wählen">
+        <input id="newHex2" type="text" value="#4AA3FF" maxlength="7" aria-label="Zweiter HEX-Wert">
+      </div>
       <button id="saveBtn" class="save" type="submit">Speichern</button>
     </div>
     <p id="addMsg" class="status" aria-live="polite"></p>
@@ -254,12 +270,46 @@ function validHex(value){
     /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(value.trim());
 }
 
+function makeHexRow(code, showDot){
+  const row = document.createElement("div");
+  row.className = "hexrow";
+
+  const label = document.createElement("div");
+  label.className = "hexlabel";
+  if(showDot){
+    const chip = document.createElement("span");
+    chip.className = "chip";
+    chip.style.backgroundColor = code;
+    label.append(chip);
+  }
+  const hex = document.createElement("code");
+  hex.className = "hex";
+  hex.textContent = code;
+  label.append(hex);
+
+  const copy = document.createElement("button");
+  copy.className = "copy";
+  copy.textContent = "HEX kopieren";
+  copy.onclick = async () => {
+    try{
+      await navigator.clipboard.writeText(code);
+      copy.textContent = "Kopiert!";
+      setTimeout(() => copy.textContent = "HEX kopieren", 1300);
+    }catch{
+      copy.textContent = code;
+    }
+  };
+
+  row.append(label, copy);
+  return row;
+}
+
 function render(){
   const words = $("search").value.toLowerCase().trim().split(/\s+/).filter(Boolean);
   const material = $("materialFilter").value;
   const items = filaments.filter(item =>
     (!material || item.material === material) &&
-    words.every(word => `${item.color} ${item.material} ${item.hex}`.toLowerCase().includes(word))
+    words.every(word => `${item.color} ${item.material} ${item.hex} ${item.hex2}`.toLowerCase().includes(word))
   );
 
   const grid = $("grid");
@@ -271,12 +321,16 @@ function render(){
   }
 
   for(const item of items){
+    const dual = Boolean(item.hex2);
+
     const card = document.createElement("article");
     card.className = "card";
 
     const swatch = document.createElement("div");
     swatch.className = "swatch";
-    swatch.style.backgroundColor = item.hex;
+    swatch.style.background = dual
+      ? `linear-gradient(var(--dual-angle), ${item.hex} 50%, ${item.hex2} 50%)`
+      : item.hex;
 
     const details = document.createElement("div");
     details.className = "details";
@@ -285,32 +339,23 @@ function render(){
     name.className = "name";
     name.textContent = item.color;
 
+    const tags = document.createElement("div");
+    tags.className = "tags";
     const materialLabel = document.createElement("span");
     materialLabel.className = "material";
     materialLabel.textContent = item.material || "Material unbekannt";
+    tags.append(materialLabel);
+    if(dual){
+      const badge = document.createElement("span");
+      badge.className = "material dual-tag";
+      badge.textContent = "Dual";
+      tags.append(badge);
+    }
 
-    const hexRow = document.createElement("div");
-    hexRow.className = "hexrow";
-
-    const hex = document.createElement("code");
-    hex.className = "hex";
-    hex.textContent = item.hex;
-
-    const copy = document.createElement("button");
-    copy.className = "copy";
-    copy.textContent = "HEX kopieren";
-    copy.onclick = async () => {
-      try{
-        await navigator.clipboard.writeText(item.hex);
-        copy.textContent = "Kopiert!";
-        setTimeout(() => copy.textContent = "HEX kopieren", 1300);
-      }catch{
-        copy.textContent = item.hex;
-      }
-    };
-
-    hexRow.append(hex, copy);
-    details.append(name, materialLabel, hexRow);
+    details.append(name, tags);
+    for(const code of [item.hex, item.hex2].filter(Boolean)){
+      details.append(makeHexRow(code, dual));
+    }
     card.append(swatch, details);
     grid.append(card);
   }
@@ -341,12 +386,20 @@ async function load(){
     }
     if(!res.ok) throw new Error("Serverantwort " + res.status);
     const data = await res.json() || {};
-    filaments = Object.entries(data).map(([id, value]) => ({
-      id,
-      color: typeof value?.color === "string" ? value.color : id,
-      hex: typeof value?.hex === "string" ? value.hex.trim().toUpperCase() : "",
-      material: typeof value?.material === "string" ? value.material : ""
-    })).filter(item => validHex(item.hex))
+    filaments = Object.entries(data).map(([id, value]) => {
+      const codes = [value?.hex, value?.hex2]
+        .filter(v => typeof v === "string")
+        .flatMap(v => v.match(/#(?:[0-9a-f]{6}|[0-9a-f]{3})\b/gi) || [])
+        .map(h => h.toUpperCase())
+        .slice(0, 2);
+      return {
+        id,
+        color: typeof value?.color === "string" ? value.color : id,
+        hex: codes[0] || "",
+        hex2: codes[1] || "",
+        material: typeof value?.material === "string" ? value.material : ""
+      };
+    }).filter(item => item.hex)
       .sort((a,b) => a.color.localeCompare(b.color, "de"));
 
     $("count").textContent = `${filaments.length} Farben`;
@@ -370,12 +423,19 @@ function addMessage(text, type){
   el.className = "status" + (type ? " " + type : "");
 }
 
-$("newPicker").addEventListener("input", () => {
-  $("newHex").value = $("newPicker").value.toUpperCase();
-});
-$("newHex").addEventListener("input", () => {
-  const v = $("newHex").value.trim();
-  if(/^#[0-9a-f]{6}$/i.test(v)) $("newPicker").value = v;
+function bindPair(pickerId, hexId){
+  $(pickerId).addEventListener("input", () => {
+    $(hexId).value = $(pickerId).value.toUpperCase();
+  });
+  $(hexId).addEventListener("input", () => {
+    const v = $(hexId).value.trim();
+    if(/^#[0-9a-f]{6}$/i.test(v)) $(pickerId).value = v;
+  });
+}
+bindPair("newPicker", "newHex");
+bindPair("newPicker2", "newHex2");
+$("newDual").addEventListener("change", () => {
+  $("dualPick").hidden = !$("newDual").checked;
 });
 
 $("addForm").addEventListener("submit", async event => {
@@ -384,9 +444,13 @@ $("addForm").addEventListener("submit", async event => {
   const material = $("newMaterial").value.trim();
   let hex = $("newHex").value.trim().toUpperCase();
   if(hex && !hex.startsWith("#")) hex = "#" + hex;
+  const dual = $("newDual").checked;
+  let hex2 = dual ? $("newHex2").value.trim().toUpperCase() : "";
+  if(hex2 && !hex2.startsWith("#")) hex2 = "#" + hex2;
 
   if(!color) return addMessage("Bitte einen Farbnamen eingeben.", "error");
   if(!validHex(hex)) return addMessage("Der HEX-Wert ist ungültig (z. B. #FF8800).", "error");
+  if(dual && !validHex(hex2)) return addMessage("Der zweite HEX-Wert ist ungültig.", "error");
   if(filaments.some(f => f.color.toLowerCase() === color.toLowerCase() && f.material === material)){
     return addMessage("Diese Farbe gibt es mit diesem Material schon.", "error");
   }
@@ -399,7 +463,7 @@ $("addForm").addEventListener("submit", async event => {
     const res = await fetch(`${base}/${PFAD}.json`, {
       method: "POST",
       headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({color, material, hex})
+      body: JSON.stringify(dual ? {color, material, hex, hex2} : {color, material, hex})
     });
     if(res.status === 401 || res.status === 403){
       throw new Error("Schreiben nicht erlaubt. In den Firebase-Regeln muss Schreiben für „" + PFAD + "“ erlaubt sein.");
@@ -421,4 +485,4 @@ $("materialFilter").addEventListener("change", render);
 load().then(ok => { if(ok) setInterval(load, AKTUALISIERUNG_SEK * 1000); });
 </script>
 </body>
-</html>
+  </html>
