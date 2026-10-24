@@ -7,16 +7,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #0f0e0c; 
-      --surface: #1a1916; 
-      --surface2: #242220; 
-      --border: #2e2c28;
-      --accent: #e8c97e; 
-      --text: #f0ece4; 
-      --muted: #7a7468;
-      --danger: #c0614a; 
-      --success: #6a9e72; 
-      --radius: 12px;
+      --bg: #0f0e0c; --surface: #1a1916; --surface2: #242220; --border: #2e2c28;
+      --accent: #e8c97e; --text: #f0ece4; --muted: #7a7468;
+      --danger: #c0614a; --success: #6a9e72; --radius: 12px;
       --dual-angle: 135deg; /* Richtung der Teilung bei Dualfarben */
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -40,6 +33,11 @@
     .btn-accent:hover { background: #f0d590; transform: translateY(-1px); }
     .btn-accent:disabled { opacity: 0.5; cursor: wait; transform: none; }
     .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.8rem; }
+    .btn-danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); }
+    .btn-danger:hover { background: var(--danger); color: white; }
+    .btn-danger:disabled { opacity: 0.5; cursor: wait; }
+    .cancel-link { margin-top: 0.85rem; font-size: 0.78rem; color: var(--danger); cursor: pointer; background: none; border: none; font-family: 'DM Sans', sans-serif; padding: 0; display: inline-block; }
+    .cancel-link:hover { text-decoration: underline; }
     .btn-full { width: 100%; justify-content: center; }
 
     /* Layout */
@@ -106,6 +104,7 @@
     .modal-overlay.visible { opacity: 1; pointer-events: all; }
     .modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; width: 100%; max-width: 400px; transform: translateY(20px); transition: transform 0.2s; max-height: 100%; overflow-y: auto; }
     .modal-overlay.visible .modal { transform: translateY(0); }
+    .modal p { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.25rem; line-height: 1.6; }
     .modal h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 0.4rem; }
     .modal .modal-subtitle { color: var(--muted); font-size: 0.85rem; margin-bottom: 1.25rem; }
     .modal-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.25rem; }
@@ -192,6 +191,17 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal">
+    <h3>Farbe löschen?</h3>
+    <p id="deleteText">Die Farbe wird unwiderruflich aus der Datenbank entfernt.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('deleteModal')">Behalten</button>
+      <button class="btn btn-danger" id="deleteBtn" onclick="confirmDelete()">Löschen</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ===== Nur das hier eintragen: deine Realtime-Database-URL ===== */
 const DATABASE_URL = "https://dshop-23436-default-rtdb.europe-west1.firebasedatabase.app/";
@@ -229,7 +239,7 @@ function cardHTML(item) {
     <div class="card-category">${escHtml(item.material || 'Material unbekannt')}</div>
     <div class="card-title">${escHtml(item.color)}</div>
     ${dual ? '<div class="card-meta"><span class="badge badge-price">◐ Dual</span></div>' : ''}
-    <div class="hex-list">${rows}</div></div></div>`;
+    <div class="hex-list">${rows}</div><button class="cancel-link" data-del="${escHtml(item.id)}">✕ Löschen</button></div></div>`;
 }
 
 function renderTabs() {
@@ -283,6 +293,10 @@ $('grid').addEventListener('click', async e => {
     btn.textContent = 'Kopiert!';
     setTimeout(() => btn.textContent = 'HEX kopieren', 1300);
   } catch { btn.textContent = btn.dataset.hex; }
+});
+$('grid').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-del]');
+  if (btn) askDelete(btn.dataset.del);
 });
 $('search').addEventListener('input', render);
 
@@ -366,6 +380,35 @@ async function saveColor() {
     addError('Fehler beim Speichern: ' + error.message);
   } finally {
     $('saveBtn').disabled = false;
+  }
+}
+
+/* ===== Löschen ===== */
+let deleteId = null;
+function askDelete(id) {
+  const f = filaments.find(x => x.id === id);
+  if (!f) return;
+  deleteId = id;
+  $('deleteText').textContent = `„${f.color}${f.material ? ' – ' + f.material : ''}“ wird unwiderruflich aus der Datenbank entfernt.`;
+  openModal('deleteModal');
+}
+async function confirmDelete() {
+  if (!deleteId) return;
+  const base = baseUrl();
+  $('deleteBtn').disabled = true;
+  try {
+    const res = await fetch(`${base}/${PFAD}/${encodeURIComponent(deleteId)}.json`, { method: 'DELETE' });
+    if (res.status === 401 || res.status === 403) throw new Error('Löschen nicht erlaubt. In den Firebase-Regeln muss Schreiben für „' + PFAD + '“ erlaubt sein.');
+    if (!res.ok) throw new Error('Serverantwort ' + res.status);
+    closeModal('deleteModal');
+    toast('Farbe gelöscht.', 'success');
+    deleteId = null;
+    await load();
+  } catch (error) {
+    closeModal('deleteModal');
+    toast(error.message, 'error');
+  } finally {
+    $('deleteBtn').disabled = false;
   }
 }
 
