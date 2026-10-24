@@ -130,6 +130,16 @@
 
     @media (max-width: 600px) { .stats-bar { gap: 1.5rem; } }
 
+    /* FILAMENT PICKER */
+    .fil-picker { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .fpick-btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.65rem; border-radius: 20px; border: 1px solid var(--border); background: var(--surface2); color: var(--muted); cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.78rem; transition: all 0.15s; }
+    .fpick-btn:hover { border-color: var(--accent); color: var(--text); }
+    .fpick-btn.selected { border-color: var(--accent); background: rgba(232,201,126,0.12); color: var(--text); }
+    .fpick-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; position: relative; }
+    .fpick-dot.dual::before, .fpick-dot.dual::after { content: ''; position: absolute; top: 0; width: 50%; height: 100%; }
+    .fpick-dot.dual::before { left: 0; background: var(--c1); border-radius: 50% 0 0 50%; }
+    .fpick-dot.dual::after { right: 0; background: var(--c2); border-radius: 0 50% 50% 0; }
+
     /* CATEGORY SECTIONS */
     .cat-section { grid-column: 1 / -1; margin-top: 1rem; }
     .cat-section:first-child { margin-top: 0; }
@@ -298,6 +308,18 @@ function render() {
 
   grid.innerHTML = html;
   grid.querySelectorAll('.card').forEach((c, i) => c.style.animationDelay = `${i * 0.06}s`);
+  // Inject filament picker buttons
+  filtered.forEach(item => {
+    const picker = document.getElementById(`fil_${item.id}`);
+    if (!picker) return;
+    picker.innerHTML = filaments.map((f, fi) => {
+      const val = f.color + ' – ' + f.material;
+      const dot = f.hex2
+        ? `<span class="fpick-dot dual" style="--c1:${f.hex||'#888'};--c2:${f.hex2}"></span>`
+        : `<span class="fpick-dot" style="background:${f.hex||'#888'}"></span>`;
+      return `<button class="fpick-btn" onclick="selectFilament('${item.id}', this.dataset.val, this)" data-val="${val}">${dot}<span>${val.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span></button>`;
+    }).join('');
+  });
 }
 
 function cardHTML(item) {
@@ -327,10 +349,14 @@ function cardHTML(item) {
     regsHTML = `<div class="registrations"><div class="reg-label">Reservierungen (${regs.length}/${item.slots})</div>${inner}</div>`;
   }
 
-  // Build filament options
-  const filOptions = filaments.map(f =>
-    `<option value="${escHtml(f.color+' – '+f.material)}">${escHtml(f.color)} – ${escHtml(f.material)}</option>`
-  ).join('');
+  // Build filament picker buttons
+  const filOptions = filaments.map((f, fi) => {
+    const val = escHtml(f.color + ' – ' + f.material);
+    const dot = f.hex2
+      ? `<span class="fpick-dot dual" style="--c1:${f.hex||'#888'};--c2:${f.hex2}"></span>`
+      : `<span class="fpick-dot" style="background:${f.hex||'#888'}"></span>`;
+    return `<button class="fpick-btn" onclick="selectFilament('${item.id}', '${val}', this)" data-val="${val}">${dot}<span>${val}</span></button>`;
+  }).join('');
 
   let actionHTML = '';
   if (!myReg) {
@@ -341,11 +367,9 @@ function cardHTML(item) {
         </div>
         <div class="reserve-form" id="form_${item.id}" style="display:none">
           <label>Filament</label>
-          <select id="fil_${item.id}">
-            <option value="">Filament wählen…</option>
-            ${filOptions}
-          </select>
-          <label>Wie möchtest du es erhalten?</label>
+          <div class="fil-picker" id="fil_${item.id}"></div>
+          <input type="hidden" id="filval_${item.id}" value="" />
+          <label>Wie möchtest du es erhalten?<br><em>test</em></label>
           <textarea id="del_${item.id}" placeholder="z.B. Abholung, Versand an: Musterstr. 1, 12345 Berlin…"></textarea>
           <div class="reserve-form-err" id="err_${item.id}">Bitte alle Felder ausfüllen.</div>
           <div class="reserve-form-btns">
@@ -406,8 +430,15 @@ function hideInlineForm(itemId) {
   if (err) err.classList.remove('visible');
 }
 
+function selectFilament(itemId, val, btn) {
+  document.getElementById(`filval_${itemId}`).value = val;
+  document.querySelectorAll(`#fil_${itemId} .fpick-btn`).forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById(`err_${itemId}`).classList.remove('visible');
+}
+
 function confirmReserve(itemId) {
-  const filament = document.getElementById(`fil_${itemId}`).value.trim();
+  const filament = document.getElementById(`filval_${itemId}`).value.trim();
   const delivery = document.getElementById(`del_${itemId}`).value.trim();
   const err = document.getElementById(`err_${itemId}`);
 
