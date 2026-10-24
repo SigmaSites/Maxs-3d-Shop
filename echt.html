@@ -82,6 +82,24 @@
     .cancel-link { margin-top: 0.6rem; font-size: 0.78rem; color: var(--danger); cursor: pointer; background: none; border: none; font-family: 'DM Sans', sans-serif; padding: 0; display: inline-block; }
     .cancel-link:hover { text-decoration: underline; }
 
+    /* INLINE RESERVE FORM */
+    .reserve-form { margin-top: 0.75rem; border-top: 1px solid var(--border); padding-top: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .reserve-form label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 500; }
+    .reserve-form select, .reserve-form textarea {
+      width: 100%; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.55rem 0.75rem; color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 0.875rem; outline: none;
+      transition: border-color 0.18s;
+    }
+    .reserve-form select:focus, .reserve-form textarea:focus { border-color: var(--accent); }
+    .reserve-form select option { background: var(--surface2); }
+    .reserve-form textarea { resize: none; min-height: 60px; }
+    .reserve-form textarea::placeholder { color: var(--muted); }
+    .reserve-form-err { font-size: 0.78rem; color: var(--danger); display: none; }
+    .reserve-form-err.visible { display: block; }
+    .reserve-form-btns { display: flex; gap: 0.5rem; }
+    .reserve-form-btns button { flex: 1; }
+
     .reserve-btn-wrap { margin-top: 0.75rem; }
 
     .empty { text-align: center; padding: 5rem 2rem; color: var(--muted); }
@@ -95,28 +113,20 @@
     .toast.success { border-color: rgba(106,158,114,0.4); }
     .toast.error { border-color: rgba(192,97,74,0.4); }
 
-    /* MODAL */
+    /* NAME MODAL */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 1rem; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
     .modal-overlay.visible { opacity: 1; pointer-events: all; }
-    .modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; width: 100%; max-width: 420px; transform: translateY(20px); transition: transform 0.2s; }
+    .modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; width: 100%; max-width: 400px; transform: translateY(20px); transition: transform 0.2s; }
     .modal-overlay.visible .modal { transform: translateY(0); }
     .modal h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 0.4rem; }
     .modal .modal-subtitle { color: var(--muted); font-size: 0.85rem; margin-bottom: 1.25rem; }
     .modal-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.25rem; }
-    .modal input, .modal select, .modal textarea {
-      width: 100%; background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 8px; padding: 0.65rem 0.85rem; color: var(--text);
-      font-family: 'DM Sans', sans-serif; font-size: 0.9rem; outline: none;
-      margin-bottom: 0.75rem; transition: border-color 0.18s;
-    }
-    .modal input:focus, .modal select:focus, .modal textarea:focus { border-color: var(--accent); }
-    .modal input::placeholder, .modal textarea::placeholder { color: var(--muted); }
-    .modal select option { background: var(--surface2); }
-    .modal textarea { resize: vertical; min-height: 70px; margin-bottom: 0; }
-    .modal label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 500; margin-bottom: 0.35rem; }
-    .modal .field { margin-bottom: 0.85rem; }
-    .error-msg { color: var(--danger); font-size: 0.8rem; margin-bottom: 0.75rem; display: none; }
-    .error-msg.visible { display: block; }
+    .modal input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 0.65rem 0.85rem; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.18s; }
+    .modal input:focus { border-color: var(--accent); }
+    .modal input::placeholder { color: var(--muted); }
+
+    /* CANCEL CONFIRM MODAL */
+    .modal p { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.25rem; line-height: 1.6; }
 
     @media (max-width: 600px) { .stats-bar { gap: 1.5rem; } }
 
@@ -178,37 +188,11 @@
   </div>
 </div>
 
-<!-- RESERVATION MODAL -->
-<div class="modal-overlay" id="reserveModal">
-  <div class="modal">
-    <h3 id="reserveModalTitle">Reservieren</h3>
-    <div class="modal-subtitle" id="reserveModalSubtitle"></div>
-
-    <div class="field">
-      <label>Filament wählen</label>
-      <select id="reserveFilament">
-        <option value="">Filament wählen…</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label>Wie möchtest du es erhalten?</label>
-      <textarea id="reserveDelivery" placeholder="z.B. Abholung bei dir, Versand an meine Adresse: Musterstraße 1, 12345 Berlin, per Post…" rows="3"></textarea>
-    </div>
-
-    <div class="error-msg" id="reserveError">Bitte alle Felder ausfüllen.</div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('reserveModal')">Abbrechen</button>
-      <button class="btn btn-accent" onclick="confirmReserve()">Reservieren ✓</button>
-    </div>
-  </div>
-</div>
-
 <!-- CANCEL CONFIRM MODAL -->
 <div class="modal-overlay" id="cancelModal">
   <div class="modal">
     <h3>Reservierung stornieren?</h3>
-    <div class="modal-subtitle">Deine Reservierung wird unwiderruflich entfernt.</div>
+    <p>Deine Reservierung wird unwiderruflich entfernt.</p>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal('cancelModal')">Behalten</button>
       <button class="btn btn-danger" onclick="confirmCancel()">Stornieren</button>
@@ -217,23 +201,17 @@
 </div>
 
 <script>
-// ── CONFIG ──────────────────────────────────────────────
-const FIREBASE_URL = "https://dshop-23436-default-rtdb.europe-west1.firebasedatabase.app/";
+const FIREBASE_URL = "https://dshop-23436-default-rtdb.europe-west1.firebasedatabase.app";
 
-// ── STATE ───────────────────────────────────────────────
 let items = [];
 let filaments = [];
 let currentFilter = 'all';
 let myName = localStorage.getItem('shopMyName') || '';
-let reservingItemId = null;
+let pendingReserveId = null;
 let cancellingItemId = null;
 
 // ── FIREBASE ────────────────────────────────────────────
 async function save() {
-  if (!FIREBASE_URL || FIREBASE_URL === 'DEINE_FIREBASE_URL_HIER') {
-    localStorage.setItem('shopItems', JSON.stringify(items));
-    render(); updateStats(); return;
-  }
   try {
     await fetch(`${FIREBASE_URL}/items.json`, {
       method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(items)
@@ -243,11 +221,6 @@ async function save() {
 }
 
 async function loadAll() {
-  if (!FIREBASE_URL || FIREBASE_URL === 'DEINE_FIREBASE_URL_HIER') {
-    items = JSON.parse(localStorage.getItem('shopItems') || '[]');
-    filaments = JSON.parse(localStorage.getItem('shopFilaments') || '[]');
-    render(); updateStats(); return;
-  }
   try {
     document.getElementById('itemGrid').innerHTML =
       `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">⟳</div><p style="margin-top:1rem;color:var(--muted)">Artikel werden geladen…</p></div>`;
@@ -256,12 +229,8 @@ async function loadAll() {
       fetch(`${FIREBASE_URL}/filaments.json`)
     ]);
     const id = await ir.json(), fd = await fr.json();
-    if (id === null) items = [];
-    else if (Array.isArray(id)) items = id.filter(i => i !== null);
-    else items = Object.values(id).filter(i => i !== null);
-    if (fd === null) filaments = [];
-    else if (Array.isArray(fd)) filaments = fd.filter(f => f !== null);
-    else filaments = Object.values(fd).filter(f => f !== null);
+    items     = id === null ? [] : Array.isArray(id) ? id.filter(i=>i) : Object.values(id).filter(i=>i);
+    filaments = fd === null ? [] : Array.isArray(fd) ? fd.filter(f=>f) : Object.values(fd).filter(f=>f);
   } catch(e) { toast('Laden fehlgeschlagen.', 'error'); items = []; }
   render(); updateStats();
 }
@@ -298,9 +267,7 @@ function saveName() {
   closeModal('nameModal');
   render();
   toast(`Name gespeichert: ${myName} ✓`, 'success');
-
-  // If there's a pending reservation, open the reserve modal now
-  if (reservingItemId) openReserveModal(reservingItemId);
+  if (pendingReserveId) { showInlineForm(pendingReserveId); pendingReserveId = null; }
 }
 
 // ── RENDER ──────────────────────────────────────────────
@@ -315,7 +282,6 @@ function render() {
     return;
   }
 
-  // Group by category, sorted alphabetically
   const groups = {};
   filtered.forEach(item => {
     const cat = (item.category || 'Sonstiges').trim();
@@ -326,9 +292,7 @@ function render() {
 
   let html = '';
   sortedCats.forEach(cat => {
-    html += `<div class="cat-section" style="grid-column:1/-1">
-      <div class="cat-header"><span class="cat-label">${escHtml(cat)}</span><div class="cat-line"></div></div>
-    </div>`;
+    html += `<div class="cat-section" style="grid-column:1/-1"><div class="cat-header"><span class="cat-label">${escHtml(cat)}</span><div class="cat-line"></div></div></div>`;
     groups[cat].forEach(item => { html += cardHTML(item); });
   });
 
@@ -346,7 +310,6 @@ function cardHTML(item) {
     ? `<img class="card-img" src="${escHtml(item.image)}" alt="${escHtml(item.title)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" /><div class="card-img-placeholder" style="display:none">${escHtml(item.emoji||'📦')}</div>`
     : `<div class="card-img-placeholder">${escHtml(item.emoji||'📦')}</div>`;
 
-  // Registrations section
   let regsHTML = '';
   if (regs.length > 0) {
     let inner = '';
@@ -364,11 +327,32 @@ function cardHTML(item) {
     regsHTML = `<div class="registrations"><div class="reg-label">Reservierungen (${regs.length}/${item.slots})</div>${inner}</div>`;
   }
 
-  // Action button
+  // Build filament options
+  const filOptions = filaments.map(f =>
+    `<option value="${escHtml(f.color+' – '+f.material)}">${escHtml(f.color)} – ${escHtml(f.material)}</option>`
+  ).join('');
+
   let actionHTML = '';
   if (!myReg) {
     if (!taken) {
-      actionHTML = `<div class="reserve-btn-wrap"><button class="btn btn-accent btn-full btn-sm" onclick="openReserveModal('${item.id}')">Jetzt reservieren</button></div>`;
+      actionHTML = `
+        <div class="reserve-btn-wrap" id="btnWrap_${item.id}">
+          <button class="btn btn-accent btn-full btn-sm" onclick="showInlineForm('${item.id}')">Jetzt reservieren</button>
+        </div>
+        <div class="reserve-form" id="form_${item.id}" style="display:none">
+          <label>Filament</label>
+          <select id="fil_${item.id}">
+            <option value="">Filament wählen…</option>
+            ${filOptions}
+          </select>
+          <label>Wie möchtest du es erhalten?</label>
+          <textarea id="del_${item.id}" placeholder="z.B. Abholung, Versand an: Musterstr. 1, 12345 Berlin…"></textarea>
+          <div class="reserve-form-err" id="err_${item.id}">Bitte alle Felder ausfüllen.</div>
+          <div class="reserve-form-btns">
+            <button class="btn btn-ghost btn-sm" onclick="hideInlineForm('${item.id}')">Abbrechen</button>
+            <button class="btn btn-accent btn-sm" onclick="confirmReserve('${item.id}')">Reservieren ✓</button>
+          </div>
+        </div>`;
     } else {
       actionHTML = `<p style="font-size:0.8rem;color:var(--danger);margin-top:0.75rem;text-align:center;">✕ Alle Plätze belegt</p>`;
     }
@@ -395,7 +379,6 @@ function updateStats() {
   const visible = items.filter(i => !i.locked);
   document.getElementById('statTotal').textContent = visible.length;
   document.getElementById('statAvail').textContent = visible.filter(i => getRegs(i).length < i.slots).length;
-  document.getElementById('statRegs').textContent = visible.reduce((s, i) => s + getRegs(i).length, 0);
 }
 
 function setFilter(filter, btn) {
@@ -405,77 +388,54 @@ function setFilter(filter, btn) {
   render();
 }
 
-// ── RESERVE MODAL ───────────────────────────────────────
-function openReserveModal(itemId) {
-  if (!myName) {
-    reservingItemId = itemId;
-    openNameModal(true);
-    return;
-  }
-  const item = items.find(i => i.id === itemId);
-  if (!item) return;
-  reservingItemId = itemId;
-
-  document.getElementById('reserveModalTitle').textContent = item.title;
-  document.getElementById('reserveModalSubtitle').textContent = 'Wähle dein Filament und gib an, wie du es erhalten möchtest.';
-  document.getElementById('reserveDelivery').value = '';
-  document.getElementById('reserveError').classList.remove('visible');
-
-  // Fill filament dropdown
-  const sel = document.getElementById('reserveFilament');
-  sel.innerHTML = '<option value="">Filament wählen…</option>';
-  filaments.forEach(f => {
-    const opt = document.createElement('option');
-    opt.value = `${f.color} – ${f.material}`;
-    opt.textContent = `${f.color} – ${f.material}`;
-    sel.appendChild(opt);
-  });
-
-  openModal('reserveModal');
-  setTimeout(() => sel.focus(), 200);
+// ── INLINE FORM ──────────────────────────────────────────
+function showInlineForm(itemId) {
+  if (!myName) { pendingReserveId = itemId; openNameModal(true); return; }
+  const btn = document.getElementById(`btnWrap_${itemId}`);
+  const form = document.getElementById(`form_${itemId}`);
+  if (btn) btn.style.display = 'none';
+  if (form) { form.style.display = 'flex'; form.querySelector('select').focus(); }
 }
 
-function confirmReserve() {
-  const filament = document.getElementById('reserveFilament').value.trim();
-  const delivery = document.getElementById('reserveDelivery').value.trim();
-  const errEl = document.getElementById('reserveError');
+function hideInlineForm(itemId) {
+  const btn = document.getElementById(`btnWrap_${itemId}`);
+  const form = document.getElementById(`form_${itemId}`);
+  if (btn) btn.style.display = '';
+  if (form) form.style.display = 'none';
+  const err = document.getElementById(`err_${itemId}`);
+  if (err) err.classList.remove('visible');
+}
 
-  if (!filament || !delivery) {
-    errEl.textContent = 'Bitte Filament auswählen und Lieferart angeben.';
-    errEl.classList.add('visible');
-    return;
-  }
-  errEl.classList.remove('visible');
+function confirmReserve(itemId) {
+  const filament = document.getElementById(`fil_${itemId}`).value.trim();
+  const delivery = document.getElementById(`del_${itemId}`).value.trim();
+  const err = document.getElementById(`err_${itemId}`);
 
-  const item = items.find(i => i.id === reservingItemId);
+  if (!filament || !delivery) { err.classList.add('visible'); return; }
+  err.classList.remove('visible');
+
+  const item = items.find(i => i.id === itemId);
   if (!item) return;
   if (!item.registrations) item.registrations = [];
   const regs = getRegs(item);
-  if (regs.length >= item.slots) { toast('Leider schon belegt!', 'error'); closeModal('reserveModal'); return; }
-  if (regs.find(r => getRegName(r).toLowerCase() === myName.toLowerCase())) { toast('Du bist bereits eingetragen!', 'error'); closeModal('reserveModal'); return; }
+  if (regs.length >= item.slots) { toast('Leider schon belegt!', 'error'); return; }
+  if (regs.find(r => getRegName(r).toLowerCase() === myName.toLowerCase())) { toast('Du bist bereits eingetragen!', 'error'); return; }
 
   item.registrations.push({ name: myName, filament, delivery });
   save();
-  closeModal('reserveModal');
-  toast(`Reserviert! 🎉`, 'success');
-  reservingItemId = null;
+  toast('Reserviert! 🎉', 'success');
 }
 
 // ── CANCEL ──────────────────────────────────────────────
-function askCancel(itemId) {
-  cancellingItemId = itemId;
-  openModal('cancelModal');
-}
+function askCancel(itemId) { cancellingItemId = itemId; openModal('cancelModal'); }
 
 function confirmCancel() {
   const item = items.find(i => i.id === cancellingItemId);
   if (item) {
     item.registrations = getRegs(item).filter(r => getRegName(r).toLowerCase() !== myName.toLowerCase());
-    save();
-    toast('Reservierung storniert.', 'success');
+    save(); toast('Reservierung storniert.', 'success');
   }
-  closeModal('cancelModal');
-  cancellingItemId = null;
+  closeModal('cancelModal'); cancellingItemId = null;
 }
 
 // ── MODAL HELPERS ────────────────────────────────────────
@@ -496,7 +456,6 @@ function escHtml(str) {
   return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 
-// ── INIT ────────────────────────────────────────────────
 updateHeaderName();
 loadAll();
 if (!myName) setTimeout(() => openNameModal(true), 800);
