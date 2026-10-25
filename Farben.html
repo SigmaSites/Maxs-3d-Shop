@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Filament-Farben</title>
+  <title>Maxs 3d Shop – Filament-Farben</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -61,6 +61,7 @@
     .search:focus { border-color: var(--accent); }
     .search::placeholder { color: var(--muted); }
     .status { font-size: 0.8rem; color: var(--muted); margin-bottom: 1.5rem; }
+    .status:empty { display: none; }
     .status.error { color: var(--danger); }
 
     /* Karten */
@@ -75,11 +76,6 @@
     .card-meta { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
     .badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 500; }
     .badge-price { background: rgba(232,201,126,0.1); color: var(--accent); }
-    .hex-list { border-top: 1px solid var(--border); padding-top: 0.85rem; margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; }
-    .hex-row { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
-    .hex-label { display: inline-flex; align-items: center; gap: 0.45rem; min-width: 0; }
-    .hex-label code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.85rem; color: var(--text); }
-    .hex-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.15); }
 
     /* Kategorien */
     .cat-section { grid-column: 1 / -1; margin-top: 1rem; }
@@ -128,7 +124,6 @@
       .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.85rem; }
       .card-body { padding: 0.9rem; }
       .card-title { font-size: 1.05rem; }
-      .hex-row { flex-direction: column; align-items: stretch; }
     }
   </style>
 </head>
@@ -156,7 +151,7 @@
     <div class="filter-tabs" id="materialTabs"></div>
   </div>
   <input class="search" id="search" type="search" placeholder="Farbe, Material oder HEX suchen …" aria-label="Filamente suchen" />
-  <p class="status" id="status">Lade Daten …</p>
+  <p class="status" id="status"></p>
   <div class="grid" id="grid" aria-live="polite"></div>
 </main>
 
@@ -226,20 +221,14 @@ function toast(msg, type = 'success') {
 function setStatus(text, isError) { $('status').textContent = text; $('status').className = 'status' + (isError ? ' error' : ''); }
 
 /* ===== Anzeige ===== */
-function hexRow(code, showDot) {
-  const dot = showDot ? `<span class="hex-dot" style="background:${code}"></span>` : '';
-  return `<div class="hex-row"><span class="hex-label">${dot}<code>${code}</code></span><button class="btn btn-ghost btn-sm" data-hex="${code}">HEX kopieren</button></div>`;
-}
-
 function cardHTML(item) {
   const dual = Boolean(item.hex2);
   const bg = dual ? `linear-gradient(var(--dual-angle), ${item.hex} 50%, ${item.hex2} 50%)` : item.hex;
-  const rows = [item.hex, item.hex2].filter(Boolean).map(c => hexRow(c, dual)).join('');
   return `<div class="card"><div class="swatch" style="background:${bg}"></div><div class="card-body">
     <div class="card-category">${escHtml(item.material || 'Material unbekannt')}</div>
     <div class="card-title">${escHtml(item.color)}</div>
     ${dual ? '<div class="card-meta"><span class="badge badge-price">◐ Dual</span></div>' : ''}
-    <div class="hex-list">${rows}</div><button class="cancel-link" data-del="${escHtml(item.id)}">✕ Löschen</button></div></div>`;
+    <button class="cancel-link" data-del="${escHtml(item.id)}">✕ Löschen</button></div></div>`;
 }
 
 function renderTabs() {
@@ -285,15 +274,6 @@ function updateStats() {
   $('statMat').textContent = new Set(filaments.map(f => f.material).filter(Boolean)).size;
 }
 
-$('grid').addEventListener('click', async e => {
-  const btn = e.target.closest('button[data-hex]');
-  if (!btn) return;
-  try {
-    await navigator.clipboard.writeText(btn.dataset.hex);
-    btn.textContent = 'Kopiert!';
-    setTimeout(() => btn.textContent = 'HEX kopieren', 1300);
-  } catch { btn.textContent = btn.dataset.hex; }
-});
 $('grid').addEventListener('click', e => {
   const btn = e.target.closest('button[data-del]');
   if (btn) askDelete(btn.dataset.del);
@@ -323,7 +303,7 @@ async function load() {
         material: typeof value?.material === 'string' ? value.material : ''
       };
     }).filter(f => f.hex).sort((a, b) => a.color.localeCompare(b.color, 'de'));
-    setStatus(filaments.length ? 'Mit Firebase verbunden. Aktualisiert alle ' + AKTUALISIERUNG_SEK + ' Sekunden.' : 'Keine gültigen Filament-Einträge unter „' + PFAD + '“ gefunden.');
+    setStatus(filaments.length ? '' : 'Noch keine Farben vorhanden.');
     renderTabs(); render(); updateStats();
     return true;
   } catch (error) {
